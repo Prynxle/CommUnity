@@ -2,6 +2,7 @@ import Beams from "../components/Beams";
 import LoginCard from "../components/LoginCard";
 import logo from "../src/assets/LOGO1.png";
 
+
 export default function Page() {
   return (
     <div className="relative h-screen w-full">
@@ -17,16 +18,21 @@ export default function Page() {
           rotation={0}
         />
       </div>
-      <div className="relative z-10 flex h-full w-full items-center justify-center p-6">
-        <div className="flex flex-col items-center gap-6">
+      <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-2">
           {/* Header logo + wordmark outside, on top of the container */}
-          <div className="relative">
-            <img src={logo.src} width={280} height={280} alt="logo" className=" drop-shadow" />
-            <span className="tracking-[.90em] text-white/520 text-xl font-bold fontstyle:verdana">COMMUNITY</span>
+          <div className="relative flex flex-col items-center text-center -mt-10">
+            <img src={logo.src} width={300} height={300} alt="logo" className="drop-shadow" />
+            <span className="relative -top-2 tracking-[.35em] text-3xl font-bold font-georama mt-[-8px]">
+              <span className="text-white">COMM</span>
+              <span className="text-orange-500">UNITY</span>
+            </span>
+
           </div>
 
-          {/* Ito yung container ng login card */}
-          <div className="w-full max-w-3xl min-w-[600px] h-[600px] rounded-2xl border border-white/20 bg-white/10 p-10 backdrop-blur-md shadow-2xl">
+
+          {/* Login container */}
+          <div className="w-[515px] h-[550px] rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-md shadow-2xl">
             <div className="w-full">
               <LoginCard containerless />
             </div>
