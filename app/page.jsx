@@ -1,8 +1,12 @@
-import Beams from "../components/Beams";
-import LoginCard from "../components/LoginCard";
+// app/page.jsx — Home/Login route
+// Purpose: Primary entry point showing brand + login over animated background.
+// Why: Guides users directly to authentication on first visit.
+import Link from "next/link";
+import Beams from "../components/backgrounds/Beams"; {/* Background*/}
+import LoginCard from "../components/auth/LoginCard";
 import logo from "../src/assets/LOGO1.png";
 
-
+// Main PAGE
 export default function Page() {
   return (
     <div className="relative h-screen w-full">
@@ -20,9 +24,10 @@ export default function Page() {
       </div>
       <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
         <div className="flex flex-col items-center gap-2">
-          {/* Header logo + wordmark outside, on top of the container */}
           <div className="relative flex flex-col items-center text-center -mt-10">
-            <img src={logo.src} width={300} height={300} alt="logo" className="drop-shadow" />
+            <Link href="/landingpage" aria-label="Go to landing page">
+              <img src={logo.src} width={300} height={300} alt="logo" className="drop-shadow" />
+            </Link>
             <span className="relative -top-2 tracking-[.35em] text-3xl font-bold font-georama mt-[-8px]">
               <span className="text-white">COMM</span>
               <span className="text-orange-500">UNITY</span>

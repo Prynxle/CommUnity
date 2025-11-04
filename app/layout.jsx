@@ -1,3 +1,6 @@
+// app/layout.jsx — Root layout wrapper for all routes
+// Purpose: Set up global CSS, HTML lang, and dark theme class.
+// Why: Centralizes app-wide structure and theming.
 import "./globals.css";
 
 export const metadata = { title: "Community" };
