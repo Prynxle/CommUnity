@@ -9,7 +9,7 @@ const Header = () => {
           Report with Ease, <br /> Track with Confidence.
         </h1>
         <p className="text-lg sm:text-xl mb-8">
-          Welcome to Marias Heights Community System
+          Welcome to Marikina Heights Community System
         </p>
         <a
           href="#features"

@@ -6,6 +6,9 @@ import Beams from "../../components/backgrounds/Beams";
 import RegistrationCard from "../../components/auth/RegistrationCard";
 import logo from "../../src/assets/LOGO1.png";
 
+// API FETCH . From Services
+
+
 // Registration Page
 export default function RegisterPage() {
   return (

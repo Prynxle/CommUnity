@@ -47,6 +47,19 @@ Minor UI fixes
 
 
 
+DATABASE SCHEMA
+
+USER TABLE
+p_id 1
+
+TIME TABLE
+p_id (1,1)
+
+ADMIN TABLE 
+p_id 1
+
+
+
 
 
 🏗️ Project Structure
