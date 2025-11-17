@@ -21,8 +21,3 @@ export async function POST(request) {
     return NextResponse.json({ error: message }, { status: 401 })
   }
 }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 97b7aa3 (Login/Registration Authentication Configured)
