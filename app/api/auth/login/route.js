@@ -22,4 +22,7 @@ export async function POST(request) {
   }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 97b7aa3 (Login/Registration Authentication Configured)
