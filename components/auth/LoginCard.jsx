@@ -4,11 +4,16 @@
 // Why: Serves as the entry point to authentication; UI-only until backend/auth APIs are wired.
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function LoginCard({ containerless = false }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const router = useRouter()
 
   // Define the showPassword state
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +30,40 @@ export default function LoginCard({ containerless = false }) {
         <span />
       </div>
 
-      <form className="mt-4 space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="mt-4 space-y-4"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          setErrorMessage('')
+          setSuccessMessage('')
+
+          if (!email || !password) {
+            setErrorMessage('Please enter your email and password.')
+            return
+          }
+
+          setIsLoading(true)
+          try {
+            const response = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password, remember }),
+            })
+
+            const payload = await response.json()
+            if (!response.ok) {
+              throw new Error(payload?.error ?? 'Unable to sign in.')
+            }
+
+            setSuccessMessage('Signed in successfully.')
+          router.push('/pagetest')
+          } catch (error) {
+            setErrorMessage(error.message)
+          } finally {
+            setIsLoading(false)
+          }
+        }}
+      >
         <label className="block text-[16px] font-anek text-white/100">E-mail</label>
         <div className="relative">
 
@@ -138,7 +176,23 @@ export default function LoginCard({ containerless = false }) {
           <button type="button" className="text-white/90 hover:text-white underline underline-offset-4">Forgot Password?</button>
         </div>
 
-        <button type="submit" className="mt-2 w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition">Login</button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="mt-2 w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isLoading ? 'Signing in…' : 'Login'}
+        </button>
+
+        {(errorMessage || successMessage) && (
+          <p
+            className={`text-sm ${
+              errorMessage ? 'text-red-300' : 'text-emerald-300'
+            }`}
+          >
+            {errorMessage || successMessage}
+          </p>
+        )}
       </form>
 
       {/* Divider */}

@@ -1,5 +1,9 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
   "/page": "app/page.js",
-  "/landingpage/page": "app/landingpage/page.js"
+  "/register/page": "app/register/page.js",
+  "/email-redirect/page": "app/email-redirect/page.js",
+  "/landingpage/page": "app/landingpage/page.js",
+  "/pagetest/page": "app/pagetest/page.js"
 }

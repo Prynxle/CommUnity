@@ -5,6 +5,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function RegistrationCard({ containerless = false }) {
   const [firstName, setFirstName] = useState('')
@@ -13,6 +14,10 @@ export default function RegistrationCard({ containerless = false }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const router = useRouter()
 
   const Inner = (
     <>
@@ -21,7 +26,57 @@ export default function RegistrationCard({ containerless = false }) {
         <span />
       </div>
 
-      <form className="mt-6 space-y-6" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="mt-6 space-y-6"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          setErrorMessage('')
+          setSuccessMessage('')
+
+          if (!agreeToTerms) {
+            setErrorMessage('You must accept the terms to continue.')
+            return
+          }
+
+          if (!email || !password) {
+            setErrorMessage('Email and password are required.')
+            return
+          }
+
+          if (password !== confirmPassword) {
+            setErrorMessage('Passwords do not match.')
+            return
+          }
+
+          setIsLoading(true)
+          try {
+            const response = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email,
+                password,
+                metadata: {
+                  firstName: firstName || undefined,
+                  lastName: lastName || undefined,
+                },
+              }),
+            })
+
+            const payload = await response.json()
+            if (!response.ok) {
+              throw new Error(payload?.error ?? 'Unable to register.')
+            }
+
+            setSuccessMessage('Account created! Check your inbox to verify.')
+            router.push('/email-redirect')
+          } catch (error) {
+            setErrorMessage(error.message)
+          } finally {
+            setIsLoading(false)
+          }
+        }}
+      >
         {/* Name Fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -133,7 +188,23 @@ export default function RegistrationCard({ containerless = false }) {
           </label>
         </div>
 
-        <button type="submit" className="mt-2 w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition">Create Account</button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="mt-2 w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isLoading ? 'Creating account…' : 'Create Account'}
+        </button>
+
+        {(errorMessage || successMessage) && (
+          <p
+            className={`text-sm ${
+              errorMessage ? 'text-red-300' : 'text-emerald-300'
+            }`}
+          >
+            {errorMessage || successMessage}
+          </p>
+        )}
       </form>
 
       {/* Divider */}
