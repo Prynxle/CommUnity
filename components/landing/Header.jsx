@@ -1,27 +1,122 @@
-// Header.jsx
-// Purpose: Hero section for the marketing/landing page.
-// Why: Sets the context and provides a CTA to learn more about features.
+import { georama, abeezee, inter } from "../../lib/fonts";
+
+
+
 const Header = () => {
   return (
-    <header className="w-full py-16 px-8 bg-black bg-opacity-60">
-      <div className="container mx-auto text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
-          Report with Ease, <br /> Track with Confidence.
-        </h1>
-        <p className="text-lg sm:text-xl mb-8">
-          Welcome to Marias Heights Community System
-        </p>
-        <a
-          href="#features"
-          className="bg-orange-500 px-8 py-3 rounded-full text-lg font-medium transition-transform transform hover:scale-105"
-        >
-          Learn More
-        </a>
-      </div>
-    </header>
+    <>
+      {/* NAVBAR */}
+      <nav className="w-full fixed top-0 left-0 z-50 bg-black bg-opacity-70 h-[80px]">
+        <div className="w-full flex items-center justify-between h-full px-6">
+
+          {/* Logo + Text */}
+          <div className="flex items-center">
+            <img
+              src="/LOGO1.png"
+              alt="CommUnity Logo"
+              className="h-[60px] sm:h-[80px] md:h-[110px] w-auto object-contain"
+            />
+            <span
+              className={`${georama.className} font-extrabold text-white text-[22px] sm:text-[26px] md:text-[24px] tracking-[0.25em] -ml-[50px]`}
+            >
+              COMM<span className="text-orange-500">UNITY</span>
+            </span>
+          </div>
+
+          {/* Nav Items */}
+          <div className={`${inter.className} flex flex-col sm:flex-row items-center text-gray-300 text-[12px] sm:text-[14px] gap-6 sm:gap-10 md:gap-8`}>
+            <a href="#home" className="hover:text-orange-400 transition">Home</a>
+            <a href="#sdg" className="hover:text-orange-400 transition">SDG</a>
+            <a href="#developers" className="hover:text-orange-400 transition">Developers</a>
+            <a href="#signin" className="hover:text-orange-400 transition">Sign In</a>
+            <a
+              href="#signup"
+              className="text-gray-300 border border-white px-3 py-[2px] rounded-md hover:bg-white hover:text-black transition"
+            >
+              Sign Up
+            </a>
+          </div>
+        </div>
+
+        {/* Subtle Bottom Border */}
+        <div className="absolute -bottom-[1px] left-0 w-full h-[1px] bg-gradient-to-r from-white/0 via-white/5 to-white/0"></div>
+      </nav>
+
+
+      {/* ===== HERO HEADER SECTION WITH ORANGE OUTLINE BG ===== */}
+      <header
+        className="
+          relative w-full 
+          h-[700px] 
+          sm:h-[800px] 
+          md:h-[900px] 
+          lg:h-[1000px] 
+          xl:h-[800px]
+          mt-16 overflow-hidden bg-black
+        "
+      >
+
+        {/* ORANGE OUTLINE BACKGROUND */}
+        <div
+          className="absolute inset-0 text-orange-500 opacity-80 mix-blend-screen bg-no-repeat bg-right"
+          style={{
+            backgroundImage: "url('/marikinabg.png')",
+            backgroundSize: "87%",
+            backgroundPosition: "100% 10%",
+          }}
+        ></div>
+
+        {/* Black Overlay */}
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        {/* HERO TEXT CONTENT */}
+        <div className="relative z-10 container mx-auto text-center px-8 pt-48 pb-20">
+
+          {/* HEADLINE */}
+          <h1 className={`${abeezee.className} text-white text-4xl sm:text-5xl md:text-6xl font-normal text-center`}>
+
+            <span className="text-orange-500">Report</span> with Ease.
+
+            {/* BIG GAP HERE */}
+            <div className="mt-10"></div>
+
+            <span className="text-orange-500">Track</span> with Confidence.
+          </h1>
+
+
+
+          <p className="text-[20px] sm:text-[22px] text-white/90 leading-relaxed max-w-4xl mx-auto mt-8 font-inter">
+            Easily report community issues and stay updated – with CommUnity,
+
+            {/* Move second line downward */}
+            <span className="block mt-0">
+              your voice is heard and action is just a click away!
+            </span>
+          </p>
+
+
+          {/* BUTTONS */}
+          <div className="flex justify-center gap-6 mt-10">
+            <a
+              href="#get-started"
+              className="bg-orange-500 text-white px-8 py-3 rounded-md font-medium hover:opacity-90 transition font-abeezee"
+            >
+              Get Started
+            </a>
+
+            <a
+              href="#learn-more"
+              className="border border-white text-white px-8 py-3 rounded-md font-medium hover:bg-white hover:text-black transition font-abeezee"
+            >
+              Learn More
+            </a>
+          </div>
+
+        </div>
+
+      </header>
+    </>
   );
 };
 
 export default Header;
-
-
