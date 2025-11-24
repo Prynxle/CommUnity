@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import { georama, abeezee, inter } from "../../lib/fonts";
 
 
@@ -11,11 +13,6 @@ const Header = () => {
 
           {/* Logo + Text */}
           <div className="flex items-center">
-            <img
-              src="/LOGO1.png"
-              alt="CommUnity Logo"
-              className="h-[60px] sm:h-[80px] md:h-[110px] w-auto object-contain"
-            />
             <span
               className={`${georama.className} font-extrabold text-white text-[22px] sm:text-[26px] md:text-[24px] tracking-[0.25em] -ml-[50px]`}
             >
@@ -28,13 +25,8 @@ const Header = () => {
             <a href="#home" className="hover:text-orange-400 transition">Home</a>
             <a href="#sdg" className="hover:text-orange-400 transition">SDG</a>
             <a href="#developers" className="hover:text-orange-400 transition">Developers</a>
-            <a href="#signin" className="hover:text-orange-400 transition">Sign In</a>
-            <a
-              href="#signup"
-              className="text-gray-300 border border-white px-3 py-[2px] rounded-md hover:bg-white hover:text-black transition"
-            >
-              Sign Up
-            </a>
+            <Link href="/login" className="hover:text-orange-400 transition">Sign In</Link>
+            <Link href="#signup"className="text-gray-300 border border-white px-3 py-[2px] rounded-md hover:bg-white hover:text-black transition">Sign Up</Link>
           </div>
         </div>
 

@@ -56,7 +56,7 @@ export default function LoginCard({ containerless = false }) {
             }
 
             setSuccessMessage('Signed in successfully.')
-          router.push('/pagetest')
+          router.push('/home')
           } catch (error) {
             setErrorMessage(error.message)
           } finally {
