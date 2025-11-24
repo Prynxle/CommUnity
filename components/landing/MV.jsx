@@ -18,7 +18,7 @@ const MV = () => {
           max-w-[1200px]
           rounded-3xl
           overflow-hidden
-          shadow-[0px_40px_80px_rgba(255,140,20,0.35),0px_0px_50px_rgba(255,140,20,0.25)]
+          0 40px 80px rgba(0,0,0,0.25),0px_0px_50px_rgba(255,140,20,0.20)]
         "
       >
 
@@ -31,7 +31,7 @@ const MV = () => {
             p-16
             relative
           "
-          style={{ backgroundImage: `url(${containerBg.src})` }}
+          style={{ backgroundImage: `url(${containerBg.src})`, filter: 'brightness(0.8)'}}
         >
 
           {/* DIVIDER – DESKTOP */}

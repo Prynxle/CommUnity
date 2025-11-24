@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { saveUserProfile } from '../../lib/userStorage'
 
 export default function LoginCard({ containerless = false }) {
   const [email, setEmail] = useState('')
@@ -55,6 +56,13 @@ export default function LoginCard({ containerless = false }) {
               throw new Error(payload?.error ?? 'Unable to sign in.')
             }
 
+            const profile = {
+              firstName: payload?.user?.user_metadata?.firstName ?? '',
+              lastName: payload?.user?.user_metadata?.lastName ?? '',
+              email: payload?.user?.email ?? email,
+            }
+
+            saveUserProfile(profile, remember)
             setSuccessMessage('Signed in successfully.')
           router.push('/home')
           } catch (error) {

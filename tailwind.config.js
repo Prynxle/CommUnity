@@ -61,6 +61,20 @@ export default {
       fontFamily: {
         anek: ['"Anek Gujarati"', 'sans-serif'],
       },
+      keyframes: {
+        'logo-bob': {
+          '0%, 100%': { transform: 'translateY(0) scale(1)' },
+          '50%': { transform: 'translateY(-12px) scale(1.04)' },
+        },
+        'logo-glow': {
+          '0%, 100%': { opacity: '0.35', transform: 'scale(0.9)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.1)' },
+        },
+      },
+      animation: {
+        'logo-bob': 'logo-bob 8.8s ease-in-out infinite',
+        'logo-glow': 'logo-glow 7.2s ease-in-out infinite',
+      },
     },
   },
   plugins: [animate],

@@ -14,7 +14,7 @@ const Header = () => {
           {/* Logo + Text */}
           <div className="flex items-center">
             <span
-              className={`${georama.className} font-extrabold text-white text-[22px] sm:text-[26px] md:text-[24px] tracking-[0.25em] -ml-[50px]`}
+              className={`${georama.className} font-extrabold text-white text-[26px] sm:text-[28px] md:text-[30px] tracking-[0.25em] -ml-[-10px]`}
             >
               COMM<span className="text-orange-500">UNITY</span>
             </span>

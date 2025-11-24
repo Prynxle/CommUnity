@@ -22,8 +22,7 @@ const WhyCommunitySystem = () => {
         {/* Card 1 */}
         <div
           className="group bg-[#0F0F0F] rounded-3xl p-10 text-center 
-          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]
-          shadow-[0_12px_30px_rgba(255,255,255,0.18),-8px_0_20px_rgba(255,255,255,0.15),8px_0_20px_rgba(255,255,255,0.15)]"
+          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]"
         >
           <Image
             src={reportIcon}
@@ -53,8 +52,7 @@ const WhyCommunitySystem = () => {
         {/* Card 2 */}
         <div
           className="group bg-[#0F0F0F] rounded-3xl p-10 text-center 
-          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]
-          shadow-[0_12px_30px_rgba(255,255,255,0.18),-8px_0_20px_rgba(255,255,255,0.15),8px_0_20px_rgba(255,255,255,0.15)]"
+          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]"
         >
           <Image
             src={trackIcon}
@@ -84,8 +82,7 @@ const WhyCommunitySystem = () => {
         {/* Card 3 */}
         <div
           className="group bg-[#0F0F0F] rounded-3xl p-10 text-center 
-          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]
-          shadow-[0_12px_30px_rgba(255,255,255,0.18),-8px_0_20px_rgba(255,255,255,0.15),8px_0_20px_rgba(255,255,255,0.15)]"
+          hover:bg-orange-500 transition duration-300 mx-auto max-w-[330px]"
         >
           <Image
             src={aiIcon}
