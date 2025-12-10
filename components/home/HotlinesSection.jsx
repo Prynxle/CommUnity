@@ -43,14 +43,14 @@ export default function EmergencyResponse() {
 
             {/* CALL 161 BUTTON */}
             <a
-              href="tel:161"
+              href="tel:09496733019"
               className="
                 block text-center mt-6 bg-gradient-to-r from-[#FF8A00] to-[#ff9f2e]
                 text-black font-semibold py-3 rounded-lg shadow-[0_0_20px_#ff8a0035]
                 hover:opacity-90 transition
               "
             >
-              CALL 161 NOW →
+              CALL 09496733019 NOW →
             </a>
 
             <div className="h-px bg-[#2B2B2B] my-6" />
@@ -132,23 +132,72 @@ const hotlines = [
     tel: "0212342222",
   },
   {
-    office: "Marikina Police",
-    desc: "City Police Station",
-    num1: "(02) 1234-3333",
+    office: "Marikina PNP",
+    desc: "Marikina City Police Station",
+    num1: "8405-0091",
     num2: "Desk & patrol",
-    tel: "0212343333",
+    tel: "8405-0091",
   },
   {
-    office: "Bureau of Fire Protection – Marikina",
-    desc: "Fire Station",
-    num1: "(02) 1234-4444",
-    tel: "0212344444",
+    office: "Concepcion II PNP",
+    desc: "Marikina Concepcion II Police Station",
+    num1: "942-3618",
+    num2: "Desk & patrol",
+    tel: "942-3618",
   },
   {
-    office: "Marikina Health Office",
+    office: "Concepcion I Bureau of Fire Protection",
+    desc: "Concepcion I Fire Station",
+    num1: "706-1663",
+    tel: "706-1663",
+  },
+  {
+    office: "Marikina Heighs Barangay",
     desc: "Public health & ambulance coordination",
-    num1: "(02) 1234-5555",
-    num2: "Clinic hours & referrals",
-    tel: "0212345555",
+    num1: "942-0572",
+    num2: "Desk & patrol",
+    tel: "942-0572",
+  },
+  {
+    office: "OPSS (Office of Public Safety and Security)",
+    desc: "OPSS Office ",
+    num1: "682-9572",
+    num2: "Main hotline",
+    tel: "682-9572",
+  },
+  {
+    office: "Amang Rodriguez Hospital",
+    desc: "Emergency Medical Services",
+    num1: "942-0055",
+    num2: "Ambulance Service",
+    tel: "942-0055",
+  },
+  {
+    office: "Senior Citizen HLC",
+    desc: "Senior Citizen Help Center",
+    num1: "948-0979",
+    num2: "Main hotline",
+    tel: "948-0979",
+  },
+  {
+    office: "Parang Fire Station",
+    desc: "Fire Station",
+    num1: "636-2915",
+    num2: "Desk & patrol",
+    tel: "636-2915",
+  },
+  {
+    office: "APCO / CVO (City Veterinary Office)",
+    desc: "City Veterinary Office",
+    num1: "475-4719",
+    num2: "Main hotline",
+    tel: "475-4719",
+  },
+  {
+    office: "DSWD (Department of Social Welfare and Development)",
+    desc: "Department of Social Welfare and Development",
+    num1: "369-4132",
+    num2: "Main hotline",
+    tel: "369-4132",
   },
 ];
