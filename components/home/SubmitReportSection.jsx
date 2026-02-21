@@ -1,6 +1,42 @@
+"use client";
+
+import { useState } from "react";
 import { poppins } from "../../lib/fonts";
 
 export default function SubmitReportSection() {
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [message, setMessage] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus("loading");
+    setMessage("");
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const fileInput = form.querySelector('input[name="photo"]');
+    if (fileInput?.files?.[0]) {
+      formData.set("photo", fileInput.files[0]);
+    }
+    try {
+      const res = await fetch("/api/reports", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setStatus("error");
+        setMessage(data.error || "Failed to submit report.");
+        return;
+      }
+      setStatus("success");
+      setMessage("Report submitted successfully. Thank you.");
+      form.reset();
+    } catch (err) {
+      setStatus("error");
+      setMessage("Something went wrong. Please try again.");
+    }
+  }
+
   return (
     <section
       id="submit-report"
@@ -12,19 +48,30 @@ export default function SubmitReportSection() {
         </h2>
 
         <div className="rounded-2xl border border-[#222] bg-[#0B0B0B] p-6 sm:p-8">
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+
+            {message && (
+              <p
+                className={`text-sm ${
+                  status === "success" ? "text-green-500" : "text-red-400"
+                }`}
+              >
+                {message}
+              </p>
+            )}
 
             {/* Names & Contact */}
             <div className="grid gap-4 md:grid-cols-2">
-              <InputField label="First Name (optional)" placeholder="John" />
-              <InputField label="Last Name (optional)" placeholder="Doe" />
-              <InputField label="E-mail" placeholder="you@example.com" type="email" />
-              <InputField label="Mobile Number" placeholder="Enter your mobile number" type="tel" />
+              <InputField name="first_name" label="First Name (optional)" placeholder="John" />
+              <InputField name="last_name" label="Last Name (optional)" placeholder="Doe" />
+              <InputField name="email" label="E-mail" placeholder="you@example.com" type="email" required />
+              <InputField name="mobile_number" label="Mobile Number" placeholder="Enter your mobile number" type="tel" />
             </div>
 
             {/* Street + Issue Type */}
             <div className="grid gap-4 md:grid-cols-2">
               <SelectField
+                name="street"
                 label="Street"
                 options={[
                   "Aba Street",
@@ -170,6 +217,7 @@ export default function SubmitReportSection() {
               />
 
               <SelectField
+                name="issue_type"
                 label="Issue Type"
                 defaultLabel="Choose the type of issue"
                 options={[
@@ -203,6 +251,7 @@ export default function SubmitReportSection() {
             <div className="space-y-1">
               <label className="text-xs font-medium text-[#E0E0E0]">Description</label>
               <textarea
+                name="description"
                 rows={4}
                 placeholder="Describe the issue, when it occurs, and any landmark..."
                 className="w-full rounded-lg border border-[#333] bg-black px-3 py-2 text-sm outline-none focus:border-[#FF8A00] resize-none"
@@ -212,18 +261,21 @@ export default function SubmitReportSection() {
             {/* File + Submit */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-[#E0E0E0]">Attach Photo</label>
+                <label className="text-xs font-medium text-[#E0E0E0]">Attach Photo (optional)</label>
                 <input
+                  name="photo"
                   type="file"
+                  accept="image/*"
                   className="block text-xs text-[#B0B0B0] file:mr-3 file:rounded-md file:border-0 file:bg-[#FF8A00] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-black hover:file:bg-[#ff9f2e]"
                 />
               </div>
 
               <button
                 type="submit"
-                className="self-start rounded-lg bg-[#FF8A00] px-5 py-2 text-sm font-semibold text-black hover:bg-[#ff9f2e] transition"
+                disabled={status === "loading"}
+                className="self-start rounded-lg bg-[#FF8A00] px-5 py-2 text-sm font-semibold text-black hover:bg-[#ff9f2e] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Submit Report
+                {status === "loading" ? "Submitting…" : "Submit Report"}
               </button>
             </div>
 
@@ -235,26 +287,30 @@ export default function SubmitReportSection() {
 }
 
 /* Reusable fields */
-function InputField({ label, placeholder, type = "text" }) {
+function InputField({ name, label, placeholder, type = "text", required }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-[#E0E0E0]">{label}</label>
       <input
+        name={name}
         type={type}
         placeholder={placeholder}
+        required={required}
         className="w-full rounded-lg border border-[#333] bg-black px-3 py-2 text-sm outline-none focus:border-[#FF8A00]"
       />
     </div>
   );
 }
 
-function SelectField({ label, options = [], defaultLabel = "Choose a street" }) {
+function SelectField({ name, label, options = [], defaultLabel = "Choose a street" }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-[#E0E0E0]">{label}</label>
 
       <select
+        name={name}
         defaultValue=""
+        required
         className="
           w-full rounded-lg border border-[#333] bg-black 
           px-3 py-2 pr-8 text-sm 
