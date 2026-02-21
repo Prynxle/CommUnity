@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "../../../components/landing/Header.jsx";
-import SdgDevFooter from "../../../components/landing/SdgDevFooter.jsx";
+import SdgDevFooter from "../../../components/landing/SDGDevFooter.jsx";
 
 export default function SDGPage() {
   return (

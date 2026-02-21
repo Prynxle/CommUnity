@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { abeezee, oxanium, worksans } from "../../lib/fonts";
 
-import submitIcon from "../../src/assets/icons/submit.svg";
+import submitIcon from "../../src/assets/icons/Submit.svg";
 import acknowledgmentIcon from "../../src/assets/icons/acknowledge.svg";
-import trackIcon from "../../src/assets/icons/status.svg";
-import updatesIcon from "../../src/assets/icons/receive.svg";
+import trackIcon from "../../src/assets/icons/Status.svg";
+import updatesIcon from "../../src/assets/icons/Receive.svg";
 
 const steps = [
   {
