@@ -1,203 +1,212 @@
+// components/home/EmergencyResponse.jsx
 "use client";
 
-import { inter, anek } from "../../lib/fonts"; 
+import { inter, anekLatin } from "../../lib/fonts";
 import { FiArrowRight } from "react-icons/fi";
 
 export default function EmergencyResponse() {
   return (
-    <section className="w-full bg-black text-white py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"> {/* ALIGNMENT FIX */}
+    <section
+      id="hotlines"
+      className="relative w-full border-b border-gray-200 bg-white py-12 sm:py-16 scroll-mt-28"
+    >
+      {/* Background blobs */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-56 top-24 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[120px]" />
+        <div className="absolute right-[-240px] top-[-160px] h-[620px] w-[620px] rounded-full bg-[#261CC1]/10 blur-[130px]" />
+        <div className="absolute left-1/2 top-24 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#FFEB00]/[0.10] blur-[150px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/55 to-white" />
+      </div>
 
-        {/* Top Label */}
-        <p className="text-sm tracking-wide text-[#FBB03B] mb-2">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <p className={`${inter.className} text-[14px] font-semibold tracking-[0.22em] text-[#1a138f] mb-2`}>
           INSTANT HELP, ANYTIME
         </p>
 
-        {/* Header */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <h2
+          className={`${anekLatin.className} text-[32px] sm:text-[40px] font-semibold tracking-[-0.02em] text-gray-900`}
+        >
           Emergency Response
-        </h1>
+        </h2>
 
-        <p className="text-gray-300 max-w-3xl mb-10">
-          Reach critical services in Marikina City in just one tap. Use 161 for
-          life-threatening situations or select a local hotline for focused
-          assistance.
+        <p className="mt-2 text-[16px] sm:text-[18px] leading-relaxed text-gray-700 max-w-3xl">
+          Reach critical services in just one tap. Use the primary emergency hotline for
+          life-threatening situations, or select a campus hotline for focused assistance.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="mt-5 h-[4px] w-full bg-[#2F5BFF]" />
 
-          {/* LEFT BOX */}
-          <div className="border border-[#2B2B2B] bg-[#121212] rounded-2xl p-8 shadow-xl">
-            <h2 className="text-[#FF8A00] text-2xl font-bold">CALL 161</h2>
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          {/* LEFT CARD */}
+          <div className="rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)] overflow-hidden">
+            <div className="p-6 sm:p-7">
+              <h3 className={`${anekLatin.className} text-[24px] sm:text-[28px] font-semibold text-gray-900`}>
+                Call Marikina Emergency Hotline
+              </h3>
 
-            <div className="flex items-center gap-2 mt-2 mb-6">
-              <span className="px-3 py-1 rounded-full bg-[#2A2A2A] text-xs text-orange-400 tracking-wide">
-                EMERGENCY • 161
-              </span>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-[#261CC1]/10 px-3 py-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#FFEB00]" />
+                  <span className="text-[13px] font-semibold text-[#1a138f] tracking-wide">
+                    PRIORITY • CAMPUS
+                  </span>
+                </span>
+              </div>
+
+              <p className="mt-4 text-[16px] leading-relaxed text-gray-700">
+                For any situation where life, health, or safety is in immediate danger inside campus,
+                contact Marikina Emergency Hotline.
+              </p>
+
+              {/* MAIN CALL BUTTON */}
+              <a
+                href="tel:09496733019"
+                className="group relative mt-6 inline-flex w-full items-center justify-center overflow-hidden
+                           h-12 rounded-full border border-blue-600
+                           bg-gradient-to-b from-[#2F5BFF] to-[#261CC1]
+                           px-6 text-[16px] font-semibold text-white
+                           shadow-[0_18px_40px_rgba(38,28,193,0.22)]
+                           transition-all duration-300
+                           hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(38,28,193,0.30)]"
+              >
+                CALL 09496733019 NOW
+              </a>
+
+              <div className="my-6 h-px bg-gray-200" />
+
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                <span className="text-[13px] font-semibold tracking-[0.16em] text-red-600">
+                  ONLY FOR REAL EMERGENCIES
+                </span>
+              </div>
+
+              <p className="mt-3 text-[15px] leading-relaxed text-gray-600">
+                For non-urgent concerns and follow-ups, use the directory (Clinic, Guidance, Admin).
+              </p>
+
+              <div className="mt-6 h-[6px] w-full rounded-full bg-[#FFEB00]/50" />
             </div>
-
-            <p className="text-gray-300 leading-relaxed">
-              For any situation where life, health, or safety is in immediate
-              danger, call the national emergency hotline.
-            </p>
-
-            {/* CALL 161 BUTTON */}
-            <a
-              href="tel:09496733019"
-              className="
-                block text-center mt-6 bg-gradient-to-r from-[#FF8A00] to-[#ff9f2e]
-                text-black font-semibold py-3 rounded-lg shadow-[0_0_20px_#ff8a0035]
-                hover:opacity-90 transition
-              "
-            >
-              CALL 09496733019 NOW →
-            </a>
-
-            <div className="h-px bg-[#2B2B2B] my-6" />
-
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-3 h-3 rounded-full bg-red-500"></span>
-              <span className="text-xs text-red-400 tracking-wide">
-                ONLY FOR REAL EMERGENCIES
-              </span>
-            </div>
-
-            <p className="text-gray-400 text-sm leading-relaxed">
-              For non-urgent concerns and follow-up on reports, use the barangay
-              or city hotlines listed on the right.
-            </p>
           </div>
 
-          {/* RIGHT BOX */}
-          <div className="border border-[#2B2B2B] bg-[#121212] rounded-2xl p-8 shadow-xl">
-            <h2 className="text-gray-300 tracking-[.15em] mb-4 text-sm">
-              MARIKINA CITY HOTLINES
-            </h2>
+          {/* RIGHT CARD */}
+          <div className="rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)] overflow-hidden">
+            <div className="p-6 sm:p-7 border-b border-gray-200">
+              <h4 className="text-[14px] font-semibold tracking-[0.22em] text-gray-500">
+                CAMPUS HOTLINES
+              </h4>
+              <p className="mt-2 text-[15px] text-gray-700">
+                Save these contacts so you can reach the right office quickly.
+              </p>
+            </div>
 
-            <p className="text-gray-400 text-sm mb-6">
-              Save these contacts to your phone so you can reach help even when
-              you're offline.
-            </p>
+            <div className="px-6 sm:px-7 py-5 max-h-[420px] overflow-y-auto">
+              <div className="space-y-4">
+                {hotlines.map((item) => (
+                  <HotlineCard key={item.office} {...item} />
+                ))}
+              </div>
 
-            {/* Scroll Area */}
-            <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#2A2A2A] scrollbar-track-transparent">
-
-              {hotlines.map(({ office, desc, num1, num2, tel }) => (
-                <div
-                  key={office}
-                  className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl px-5 py-4 flex items-center justify-between"
-                >
-                  <div>
-                    <p className="font-semibold text-white">{office}</p>
-                    <p className="text-xs text-gray-400">{desc}</p>
-                    <p className="text-sm text-gray-300 mt-1 leading-tight">
-                      {num1}
-                      <br />
-                      {num2 && num2}
-                    </p>
-                  </div>
-
-                  <a
-                    href={`tel:${tel}`}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2A2A2A] text-sm hover:bg-white hover:text-black transition"
-                  >
-                    CALL <FiArrowRight size={14} />
-                  </a>
-                </div>
-              ))}
-
+              <p className="mt-5 text-[14px] text-gray-500">
+                Tip: Use the Emergency button in the header for fastest access.
+              </p>
             </div>
           </div>
         </div>
-
       </div>
     </section>
+  );
+}
+
+/* Hotline Card */
+function HotlineCard({ office, desc, num1, num2, tel }) {
+  return (
+    <div
+      className="relative rounded-2xl border border-blue-200 bg-white p-5
+                    shadow-[0_12px_35px_rgba(38,28,193,0.10)]
+                    transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(38,28,193,0.14)]"
+    >
+      {/* ✅ changed from ombre to SOLID BLUE */}
+      <div className="absolute left-0 top-0 h-full w-[6px] bg-[#2F5BFF] rounded-l-2xl" />
+
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[16px] font-semibold text-gray-900">{office}</p>
+          <p className="mt-1 text-[14px] text-gray-600">{desc}</p>
+
+          <p className="mt-2 text-[15px] text-gray-800">
+            {num1}
+            {num2 && (
+              <>
+                <br />
+                <span className="text-gray-500">{num2}</span>
+              </>
+            )}
+          </p>
+        </div>
+
+        {/* FIXED CALL BUTTON */}
+        <a
+          href={`tel:${tel}`}
+          className="inline-flex items-center gap-2
+                     h-10 rounded-full border border-blue-200 bg-white
+                     px-4 text-[14px] font-semibold text-[#1a138f]
+                     shadow-sm transition
+                     hover:bg-[#261CC1]/10 hover:-translate-y-0.5"
+        >
+          CALL
+          <span className="grid place-items-center h-6 w-6 rounded-full bg-[#261CC1]/10">
+            <FiArrowRight size={14} />
+          </span>
+        </a>
+      </div>
+    </div>
   );
 }
 
 /* Hotline Data */
 const hotlines = [
   {
-    office: "Marikina City DRRMO",
-    desc: "Disaster Risk Reduction & Management Office",
-    num1: "(02) 1234-1111",
-    num2: "Main hotline",
-    tel: "0212341111",
+    office: "Campus Clinic / Nurse",
+    desc: "First aid & medical assistance",
+    num1: "0942-0055",
+    num2: "Clinic desk",
+    tel: "09420055",
   },
   {
-    office: "Marikina Rescue",
-    desc: "City-wide rescue & ambulance response",
-    num1: "(02) 1234-2222",
-    num2: "(02) 1234-2222",
-    tel: "0212342222",
+    office: "Campus Security Office",
+    desc: "On-site safety & response",
+    num1: "0949-673-3019",
+    num2: "Security desk",
+    tel: "09496733019",
   },
   {
-    office: "Marikina PNP",
-    desc: "Marikina City Police Station",
-    num1: "8405-0091",
-    num2: "Desk & patrol",
-    tel: "8405-0091",
+    office: "Guidance Office",
+    desc: "Student support & counseling",
+    num1: "0948-0979",
+    num2: "Guidance desk",
+    tel: "09480979",
   },
   {
-    office: "Concepcion II PNP",
-    desc: "Marikina Concepcion II Police Station",
-    num1: "942-3618",
-    num2: "Desk & patrol",
-    tel: "942-3618",
+    office: "Discipline Office",
+    desc: "Incident follow-ups & mediation",
+    num1: "0942-3618",
+    num2: "Office hotline",
+    tel: "09423618",
   },
   {
-    office: "Concepcion I Bureau of Fire Protection",
-    desc: "Concepcion I Fire Station",
-    num1: "706-1663",
-    tel: "706-1663",
+    office: "Admin Office",
+    desc: "Campus operations & coordination",
+    num1: "0682-9572",
+    num2: "Main line",
+    tel: "06829572",
   },
   {
-    office: "Marikina Heighs Barangay",
-    desc: "Public health & ambulance coordination",
-    num1: "942-0572",
-    num2: "Desk & patrol",
-    tel: "942-0572",
-  },
-  {
-    office: "OPSS (Office of Public Safety and Security)",
-    desc: "OPSS Office ",
-    num1: "682-9572",
-    num2: "Main hotline",
-    tel: "682-9572",
-  },
-  {
-    office: "Amang Rodriguez Hospital",
-    desc: "Emergency Medical Services",
-    num1: "942-0055",
-    num2: "Ambulance Service",
-    tel: "942-0055",
-  },
-  {
-    office: "Senior Citizen HLC",
-    desc: "Senior Citizen Help Center",
-    num1: "948-0979",
-    num2: "Main hotline",
-    tel: "948-0979",
-  },
-  {
-    office: "Parang Fire Station",
-    desc: "Fire Station",
-    num1: "636-2915",
-    num2: "Desk & patrol",
-    tel: "636-2915",
-  },
-  {
-    office: "APCO / CVO (City Veterinary Office)",
-    desc: "City Veterinary Office",
-    num1: "475-4719",
-    num2: "Main hotline",
-    tel: "475-4719",
-  },
-  {
-    office: "DSWD (Department of Social Welfare and Development)",
-    desc: "Department of Social Welfare and Development",
-    num1: "369-4132",
-    num2: "Main hotline",
-    tel: "369-4132",
+    office: "City Emergency Hotline (161)",
+    desc: "For life-threatening situations",
+    num1: "161",
+    num2: "National emergency",
+    tel: "161",
   },
 ];

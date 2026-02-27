@@ -1,28 +1,36 @@
+"use client";
+
 import Image from "next/image";
 import { georama } from "../../lib/fonts";
 import ccIcon from "../../src/assets/icons/cc.svg";
 
-const Footer = () => {
+export default function SdgDevFooter() {
   return (
-    <footer className="py-6 bg-black text-center">
-      <div className="inline-flex justify-center items-center gap-2">
-        <Image
-          src={ccIcon}
-          alt="Creative Commons Icon"
-          width={24}   // ⬅ Bigger size
-          height={24}  // ⬅ Bigger size
-          className="relative top-[1px]" // ⬅ Adjust to align perfectly
-        />
+    <footer className="relative overflow-hidden border-t border-gray-50 bg-white">
+      {/* light mode glow background */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        {/* blue glow */}
+        <div className="absolute right-[-180px] top-[-160px] h-[460px] w-[460px] rounded-full bg-[#261CC1]/10 blur-[140px]" />
+        {/* yellow accent glow */}
+        <div className="absolute left-1/2 top-[-200px] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#FFEB00]/[0.10] blur-[160px]" />
+        {/* soft fade to white */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/85 to-white" />
+      </div>
+
+      {/* footer content */}
+      <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-4 py-6">
 
         <p
-          className={`${georama.className} text-[16px] align-middle`} // ⬅ Align text baseline
-          style={{ color: "#FB8B28" }}
+          className={[
+            georama.className,
+            "text-[13.5px] sm:text-[14.5px]",
+            "text-gray-700",
+          ].join(" ")}
         >
-          2025 Community. All rights reserved.
+          © <span className="font-semibold text-gray-900">2025</span>{" "}
+          <span className="font-semibold text-[#1C0770]">0LOPSC-COMMUNITY</span>. All rights reserved.
         </p>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}
