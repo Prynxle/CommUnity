@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/no-unknown-property */
 // Beams.jsx
 // Purpose: Render a configurable animated beams background using Three.js + React Three Fiber.
 // Why: Provides a premium, immersive visual backdrop for auth screens without blocking UI.
