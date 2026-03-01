@@ -16,7 +16,7 @@ const VALID_ROLES = Object.keys(ADMIN_EMAILS)
  */
 export async function POST(request) {
   try {
-    const { username, password, remember } = await request.json()
+    const { username, password } = await request.json()
 
     if (!username || !password) {
       return NextResponse.json(

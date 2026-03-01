@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "../../components/landing/Header.jsx";
-import SdgDevFooter from "../../components/landing/SdgDevFooter.jsx";
+import Footer from "../../components/landing/Footer.jsx";
 import Image from "next/image";
 
 export default function DevelopersPage() {
@@ -76,7 +76,7 @@ export default function DevelopersPage() {
         </div>
       </main>
 
-      <SdgDevFooter />
+      <Footer />
     </div>
   );
 }

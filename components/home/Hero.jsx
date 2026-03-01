@@ -1,17 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { georama, poppins } from "../../lib/fonts";
-
+/* eslint-disable no-unused-vars */
 export default function HeroSection() {
-  const nav = useMemo(
-    () => [
-      { label: "Home", href: "#home" },
-      { label: "Track", href: "#track" },
-      { label: "Dashboard", href: "#dashboard" },
-    ],
-    []
-  );
 
   return (
     <section

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { georama } from "../../lib/fonts";
-import ccIcon from "../../src/assets/icons/cc.svg";
 
 export default function SdgDevFooter() {
   return (

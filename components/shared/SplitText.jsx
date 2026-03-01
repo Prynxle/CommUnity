@@ -52,14 +52,14 @@ const SplitText = ({
       if (el._rbsplitInstance) {
         try {
           el._rbsplitInstance.revert()
-        } catch (_) {
+        } catch {
           /* noop */
         }
         el._rbsplitInstance = null
       }
 
       const startPct = (1 - threshold) * 100
-      const marginMatch = /^(\-?\d+(?:\.\d+)?)(px|em|rem|%)?$/.exec(rootMargin)
+      const marginMatch = /^(-?\d+(?:\.\d+)?)(px|em|rem|%)?$/.exec(rootMargin)
       const marginValue = marginMatch ? parseFloat(marginMatch[1]) : 0
       const marginUnit = marginMatch ? marginMatch[2] || 'px' : 'px'
       const sign =
@@ -125,7 +125,7 @@ const SplitText = ({
         })
         try {
           splitInstance.revert()
-        } catch (_) {
+        } catch {
           /* noop */
         }
         el._rbsplitInstance = null
