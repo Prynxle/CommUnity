@@ -1,8 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import {
+  processReportSubmission,
+  isValidTransition,
+  REPORT_STATUS,
+} from './reportProcessing'
 
 const SUPABASE_URL =
   process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL
-// Service role key bypasses RLS – use it for server-side reports so inserts always work
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -22,18 +26,184 @@ const supabase = createClient(SUPABASE_URL, key, {
   },
 })
 
+// --- Multi-stage report processing (new reports table) ---
+
 /**
- * Insert a new incident report into Supabase.
+ * Phase 1–3: Validate, sanitize, compute priority/assignment, then store in DB.
  * @param {{
- *   first_name?: string
- *   last_name?: string
+ *   category: string
+ *   locationCategory: string
+ *   subLocation?: string
+ *   subLocationRequired?: boolean
+ *   description: string
+ *   first_name: string
  *   email: string
- *   mobile_number?: string
- *   street: string
- *   issue_type: string
- *   description?: string
- *   photo_url?: string
- * }} data
+ *   photo_url?: string | null
+ * }} userInput
+ * @returns {Promise<{ report_id: string, id: string }>}
+ */
+export async function submitReport(userInput) {
+  const { reportID, status, priority, priority_score, assigned_to, sanitizedInput } =
+    processReportSubmission(userInput)
+
+  const row = {
+    report_id: reportID,
+    category: sanitizedInput.category,
+    location_category: sanitizedInput.locationCategory,
+    sub_location: sanitizedInput.subLocation || null,
+    description: sanitizedInput.description,
+    first_name: sanitizedInput.first_name,
+    email: sanitizedInput.email,
+    photo_url: userInput.photo_url ?? null,
+    status,
+    priority,
+    priority_score,
+    assigned_to,
+  }
+
+  const { data, error } = await supabase
+    .from('reports')
+    .insert(row)
+    .select('id, report_id')
+    .single()
+
+  if (error) {
+    const err = new Error(`[reports service] ${error.message}`)
+    err.__supabase = error
+    throw err
+  }
+  return { report_id: data.report_id, id: data.id }
+}
+
+/**
+ * Phase 5: Update report status with valid transition, timeline log, and optional email.
+ * @param {string} reportId - reports.report_id (text UUID from submission)
+ * @param {string} newStatus - One of SUBMITTED, IN_PROGRESS, RESOLVED, CLOSED
+ * @param {string} [adminId] - Admin who made the change (for timeline)
+ */
+export async function updateReportStatus(reportId, newStatus, adminId = null) {
+  const { data: report, error: fetchErr } = await supabase
+    .from('reports')
+    .select('id, report_id, status')
+    .eq('report_id', reportId)
+    .single()
+
+  if (fetchErr || !report) {
+    const err = new Error(`[reports service] Report not found: ${reportId}`)
+    if (fetchErr) err.__supabase = fetchErr
+    throw err
+  }
+
+  const currentStatus = report.status
+  if (!isValidTransition(currentStatus, newStatus)) {
+    const err = new Error(
+      `[reports service] Invalid status transition: ${currentStatus} -> ${newStatus}`
+    )
+    err.code = 'INVALID_TRANSITION'
+    throw err
+  }
+
+  const { error: logErr } = await supabase.from('report_timeline_log').insert({
+    report_id: reportId,
+    previous_status: currentStatus,
+    new_status: newStatus,
+    admin_id: adminId,
+  })
+
+  if (logErr) {
+    const err = new Error(`[reports service] Timeline log failed: ${logErr.message}`)
+    err.__supabase = logErr
+    throw err
+  }
+
+  const { error: updateErr } = await supabase
+    .from('reports')
+    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .eq('report_id', reportId)
+
+  if (updateErr) {
+    const err = new Error(`[reports service] Update status failed: ${updateErr.message}`)
+    err.__supabase = updateErr
+    throw err
+  }
+
+  // Placeholder: trigger email notification (implement with your email provider)
+  triggerEmailNotification(reportId, newStatus).catch((e) =>
+    console.warn('[reports service] Email notification failed:', e?.message)
+  )
+
+  return { previous_status: currentStatus, new_status: newStatus }
+}
+
+/**
+ * Placeholder for Phase 5 email. Replace with your email provider (Resend, SendGrid, etc.).
+ */
+async function triggerEmailNotification(reportId, newStatus) {
+  if (process.env.SKIP_REPORT_EMAIL === 'true') return
+  // TODO: e.g. await sendEmail({ to: report.email, template: 'status-update', reportId, newStatus })
+}
+
+/**
+ * List reports assigned to a given admin (csa_admin | clinic_admin).
+ * @param {string} assignedTo
+ * @returns {Promise<Array>}
+ */
+export async function listReports(assignedTo) {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('assigned_to', assignedTo)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    const err = new Error(`[reports service] ${error.message}`)
+    err.__supabase = error
+    throw err
+  }
+  return data ?? []
+}
+
+/**
+ * Get a single report by its public report_id (for tracking).
+ */
+export async function getReportById(reportId) {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('report_id', reportId)
+    .maybeSingle()
+
+  if (error) {
+    const err = new Error(`[reports service] ${error.message}`)
+    err.__supabase = error
+    throw err
+  }
+  return data
+}
+
+/**
+ * Get timeline entries for a report (for admin UI).
+ */
+export async function getReportTimeline(reportId) {
+  const { data, error } = await supabase
+    .from('report_timeline_log')
+    .select('*')
+    .eq('report_id', reportId)
+    .order('changed_at', { ascending: true })
+
+  if (error) {
+    const err = new Error(`[reports service] ${error.message}`)
+    err.__supabase = error
+    throw err
+  }
+  return data
+}
+
+// --- Legacy incident_reports (optional, keep for backward compat) ---
+
+/**
+ * Insert a new incident report into Supabase (legacy table).
+ * @deprecated Prefer submitReport() for the multi-stage algorithm.
  */
 export async function insertReport(data) {
   const { data: row, error } = await supabase
@@ -62,10 +232,6 @@ export async function insertReport(data) {
 
 /**
  * Upload a report photo to Supabase Storage.
- * Bucket must exist (e.g. "report-photos") with policy allowing anon insert.
- * @param {Buffer | Blob} file
- * @param {string} filename
- * @returns {Promise<string>} public URL of the uploaded file
  */
 export async function uploadReportPhoto(file, filename) {
   const ext = (filename || '').split('.').pop() || 'jpg'
@@ -90,4 +256,14 @@ export async function uploadReportPhoto(file, filename) {
   return urlData.publicUrl
 }
 
-export default { insertReport, uploadReportPhoto }
+export { REPORT_STATUS }
+export default {
+  submitReport,
+  updateReportStatus,
+  listReports,
+  getReportById,
+  getReportTimeline,
+  insertReport,
+  uploadReportPhoto,
+  REPORT_STATUS,
+}

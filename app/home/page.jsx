@@ -7,14 +7,16 @@ import TrackAndAssistantSection from "../../components/home/TrackAndAssistantSec
 import CommUpdates from "../../components/home/CommUpdates";
 import HotlinesSection from "../../components/home/HotlinesSection";
 import Footer from "../../components/home/Footer";
+import Chatbot from "../../components/home/Chatbot"; // ✅ add this (adjust path if needed)
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col">
+      {/* ✅ Sticky Header */}
       <Header />
 
-      {/* Main scrollable content */}
-      <main className="flex-1 pb-20">
+      {/* Main content */}
+      <main className="flex-1">
         <Hero />
         <SubmitReportSection />
         <TrackAndAssistantSection />
@@ -24,10 +26,8 @@ export default function HomePage() {
 
       <Footer />
 
-      {/* Floating Ask MARI button */}
-      <button className="fixed bottom-6 right-6 z-40 rounded-full bg-[#FF8A00] px-5 py-2.5 text-sm font-semibold text-black shadow-lg hover:bg-[#ff9f2e] transition">
-        Ask MARI
-      </button>
+      {/* ✅ Floating MARI Chatbot */}
+      <Chatbot />
     </div>
   );
 }

@@ -1,23 +1,53 @@
 import { NextResponse } from 'next/server'
-import { insertReport, uploadReportPhoto } from '../../../backend/services/reports'
+import { submitReport, uploadReportPhoto, listReports } from '../../../backend/services/reports'
+import { getAdminFromToken } from '../../../backend/services/adminAuth'
 
+/**
+ * GET /api/reports
+ * Admin only. Requires Authorization: Bearer <access_token>.
+ * Returns reports where assigned_to matches the admin's role.
+ */
+export async function GET(request) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+    const admin = await getAdminFromToken(token)
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized. Admin login required.' }, { status: 401 })
+    }
+    const reports = await listReports(admin.role)
+    return NextResponse.json({ reports })
+  } catch (error) {
+    console.error('[reports API] GET', error)
+    return NextResponse.json(
+      { error: error?.message ?? 'Failed to load reports.' },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * POST /api/reports
+ * Multi-stage report submission (Phase 1–3):
+ * - Required fields validation
+ * - Sanitization, unique report_id, status SUBMITTED
+ * - Priority score & level, assigned_to (csa_admin | clinic_admin)
+ */
 export async function POST(request) {
   try {
     const contentType = request.headers.get('content-type') || ''
-
     let body
     let photoUrl = null
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData()
       body = {
-        first_name: formData.get('first_name')?.toString() || null,
-        last_name: formData.get('last_name')?.toString() || null,
-        email: formData.get('email')?.toString(),
-        mobile_number: formData.get('mobile_number')?.toString() || null,
-        street: formData.get('street')?.toString(),
-        issue_type: formData.get('issue_type')?.toString(),
-        description: formData.get('description')?.toString() || null,
+        category: formData.get('category')?.toString()?.trim() || '',
+        locationCategory: formData.get('locationCategory')?.toString()?.trim() || '',
+        subLocation: formData.get('subLocation')?.toString()?.trim() || null,
+        description: formData.get('description')?.toString()?.trim() || '',
+        first_name: formData.get('first_name')?.toString()?.trim() || '',
+        email: formData.get('email')?.toString()?.trim() || '',
       }
       const file = formData.get('photo')
       if (file && file.size > 0) {
@@ -31,22 +61,30 @@ export async function POST(request) {
       body = await request.json()
     }
 
-    const { email, street, issue_type } = body
-    if (!email || !street || !issue_type) {
+    // Sub-location required when location has sub-options (frontend sends subLocationRequired or we infer)
+    const locationHasSub = [
+      '1st floor',
+      '2nd floor',
+      '3rd floor',
+      '4th floor',
+    ].includes((body.locationCategory || '').trim())
+    body.subLocationRequired = locationHasSub
+
+    body.photo_url = photoUrl ?? body.photo_url ?? null
+
+    const result = await submitReport(body)
+    return NextResponse.json({
+      id: result.id,
+      report_id: result.report_id,
+      success: true,
+    })
+  } catch (error) {
+    if (error?.code === 'MISSING_REQUIRED_FIELDS') {
       return NextResponse.json(
-        { error: 'Email, street, and issue type are required.' },
+        { error: error.detail || 'Submission Failed. Please fill all required fields.' },
         { status: 400 }
       )
     }
-
-    const row = await insertReport({
-      ...body,
-      photo_url: photoUrl ?? body.photo_url ?? null,
-      created_at: new Date().toISOString(),
-    })
-
-    return NextResponse.json({ id: row.id, success: true })
-  } catch (error) {
     console.error('[reports API]', error)
     const message =
       error?.message ?? 'Failed to submit report. Please try again.'
