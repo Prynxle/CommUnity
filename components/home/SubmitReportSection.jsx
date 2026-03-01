@@ -209,7 +209,7 @@ export default function SubmitReportSection() {
                     value={category}
                     onChange={setCategory}
                     placeholder="Select a category"
-                    options={["Student Welfare", "Peer Conflict", "Harassment", "Other"].map((x) => ({
+                    options={["Student Welfare", "Peer Conflict", "Harassment", "Trauma", "Medical Treatment (Open Wounds etc.)","Others"].map((x) => ({
                       label: x,
                       value: x,
                     }))}

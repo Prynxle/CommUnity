@@ -218,6 +218,8 @@ export default function LoginCard({ containerless = false }) {
 
       <p className="mt-4 text-center text-sm text-white/80">
         Don&apos;t have an account? <Link href="/register" className="underline hover:text-white">Register</Link>
+        {' · '}
+        <Link href="/admin/login" className="underline hover:text-white">Admin</Link>
       </p>
 
     </>
