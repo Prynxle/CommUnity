@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from 'react';
 
 import * as THREE from 'three';
@@ -301,7 +300,6 @@ const DirLight = ({ position, color }) => {
     cam.right = 24;
     cam.far = 64;
     dir.current.shadow.bias = -0.004;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <directionalLight ref={dir} color={color} intensity={1} position={position} />;
 };
