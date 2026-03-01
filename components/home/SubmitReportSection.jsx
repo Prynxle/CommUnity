@@ -90,7 +90,7 @@ export default function SubmitReportSection() {
       setCategory("");
       setLocationCategory("");
       setSubLocation("");
-    } catch (_err) {
+    } catch {
       setStatus("error");
       setMessage("Something went wrong. Please try again.");
     }

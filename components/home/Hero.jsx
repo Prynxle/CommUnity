@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable no-unused-vars */
 export default function HeroSection() {
 
   return (
