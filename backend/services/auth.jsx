@@ -20,19 +20,24 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error(
-    '[auth service] Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_ANON_KEY.'
-  )
+let _supabase = null
+function getSupabase() {
+  // Important: do NOT throw at module import time. This file can be imported during builds.
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error(
+      '[auth service] Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_ANON_KEY.'
+    )
+  }
+  if (_supabase) return _supabase
+  _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+  })
+  return _supabase
 }
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false,
-  },
-})
 
 const handle = async (promise, label) => {
   const { data, error } = await promise
@@ -54,6 +59,7 @@ export const authService = {
       throw new Error('[auth service:signUp] Email and password are required.')
     }
 
+    const supabase = getSupabase()
     const data = await handle(
       supabase.auth.signUp({
         email,
@@ -74,6 +80,7 @@ export const authService = {
       throw new Error('[auth service:signIn] Email and password are required.')
     }
 
+    const supabase = getSupabase()
     const data = await handle(
       supabase.auth.signInWithPassword({ email, password }),
       'signInWithPassword'
@@ -90,6 +97,7 @@ export const authService = {
       throw new Error('[auth service:resetPassword] Email is required.')
     }
 
+    const supabase = getSupabase()
     await handle(
       supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectTo ?? undefined,
@@ -109,6 +117,7 @@ export const authService = {
       )
     }
 
+    const supabase = getSupabase()
     const data = await handle(
       supabase.auth.verifyOtp({
         type: 'recovery',
@@ -134,6 +143,7 @@ export const authService = {
       throw new Error('[auth service:getSession] Access token is required.')
     }
 
+    const supabase = getSupabase()
     const data = await handle(
       supabase.auth.getUser(accessToken),
       'getUserFromToken'
@@ -146,6 +156,7 @@ export const authService = {
    * Server-side sign-out (revokes refresh token for the user).
    */
   async signOut() {
+    const supabase = getSupabase()
     await handle(supabase.auth.signOut(), 'signOut')
     return true
   },

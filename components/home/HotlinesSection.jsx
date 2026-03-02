@@ -8,7 +8,7 @@ export default function EmergencyResponse() {
   return (
     <section
       id="hotlines"
-      className="relative w-full border-b border-gray-200 bg-white py-12 sm:py-16 scroll-mt-28"
+      className="relative w-full overflow-hidden border-b border-gray-200 bg-white py-12 sm:py-16 scroll-mt-28"
     >
       {/* Background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -18,7 +18,7 @@ export default function EmergencyResponse() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/55 to-white" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 overflow-hidden">
         {/* Header */}
         <p className={`${inter.className} text-[14px] font-semibold tracking-[0.22em] text-[#1a138f] mb-2`}>
           INSTANT HELP, ANYTIME
@@ -40,8 +40,8 @@ export default function EmergencyResponse() {
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           {/* LEFT CARD */}
           <div className="rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)] overflow-hidden">
-            <div className="p-6 sm:p-7">
-              <h3 className={`${anekLatin.className} text-[24px] sm:text-[28px] font-semibold text-gray-900`}>
+            <div className="p-4 sm:p-6 lg:p-7">
+              <h3 className={`${anekLatin.className} text-[20px] sm:text-[24px] lg:text-[28px] font-semibold text-gray-900`}>
                 Call Marikina Emergency Hotline
               </h3>
 
@@ -54,7 +54,7 @@ export default function EmergencyResponse() {
                 </span>
               </div>
 
-              <p className="mt-4 text-[16px] leading-relaxed text-gray-700">
+              <p className="mt-4 text-[14px] sm:text-[16px] leading-relaxed text-gray-700">
                 For any situation where life, health, or safety is in immediate danger inside campus,
                 contact Marikina Emergency Hotline.
               </p>
@@ -65,7 +65,7 @@ export default function EmergencyResponse() {
                 className="group relative mt-6 inline-flex w-full items-center justify-center overflow-hidden
                            h-12 rounded-full border border-blue-600
                            bg-gradient-to-b from-[#2F5BFF] to-[#261CC1]
-                           px-6 text-[16px] font-semibold text-white
+                           px-4 sm:px-6 text-[14px] sm:text-[16px] font-semibold text-white
                            shadow-[0_18px_40px_rgba(38,28,193,0.22)]
                            transition-all duration-300
                            hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(38,28,193,0.30)]"
@@ -92,7 +92,7 @@ export default function EmergencyResponse() {
 
           {/* RIGHT CARD */}
           <div className="rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)] overflow-hidden">
-            <div className="p-6 sm:p-7 border-b border-gray-200">
+            <div className="p-4 sm:p-6 lg:p-7 border-b border-gray-200">
               <h4 className="text-[14px] font-semibold tracking-[0.22em] text-gray-500">
                 CAMPUS HOTLINES
               </h4>
@@ -101,7 +101,7 @@ export default function EmergencyResponse() {
               </p>
             </div>
 
-            <div className="px-6 sm:px-7 py-5 max-h-[420px] overflow-y-auto">
+            <div className="px-4 sm:px-6 lg:px-7 py-4 sm:py-5 max-h-[420px] overflow-y-auto">
               <div className="space-y-4">
                 {hotlines.map((item) => (
                   <HotlineCard key={item.office} {...item} />
@@ -123,7 +123,7 @@ export default function EmergencyResponse() {
 function HotlineCard({ office, desc, num1, num2, tel }) {
   return (
     <div
-      className="relative rounded-2xl border border-blue-200 bg-white p-5
+      className="relative rounded-2xl border border-blue-200 bg-white p-4 sm:p-5
                     shadow-[0_12px_35px_rgba(38,28,193,0.10)]
                     transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(38,28,193,0.14)]"
     >
@@ -149,7 +149,7 @@ function HotlineCard({ office, desc, num1, num2, tel }) {
         {/* FIXED CALL BUTTON */}
         <a
           href={`tel:${tel}`}
-          className="inline-flex items-center gap-2
+          className="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2
                      h-10 rounded-full border border-blue-200 bg-white
                      px-4 text-[14px] font-semibold text-[#1a138f]
                      shadow-sm transition

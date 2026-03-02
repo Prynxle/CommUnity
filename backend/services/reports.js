@@ -12,19 +12,24 @@ const SUPABASE_ANON_KEY =
   process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 const key = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY
-if (!SUPABASE_URL || !key) {
-  throw new Error(
-    '[reports service] Missing Supabase credentials. Set SUPABASE_URL and either SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY.'
-  )
+let _supabase = null
+function getSupabase() {
+  // Important: do NOT throw at module import time. This file can be imported during builds.
+  if (!SUPABASE_URL || !key) {
+    throw new Error(
+      '[reports service] Missing Supabase credentials. Set SUPABASE_URL and either SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY.'
+    )
+  }
+  if (_supabase) return _supabase
+  _supabase = createClient(SUPABASE_URL, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+  })
+  return _supabase
 }
-
-const supabase = createClient(SUPABASE_URL, key, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false,
-  },
-})
 
 // --- Multi-stage report processing (new reports table) ---
 
@@ -43,6 +48,7 @@ const supabase = createClient(SUPABASE_URL, key, {
  * @returns {Promise<{ report_id: string, id: string }>}
  */
 export async function submitReport(userInput) {
+  const supabase = getSupabase()
   const { reportID, status, priority, priority_score, assigned_to, sanitizedInput } =
     processReportSubmission(userInput)
 
@@ -82,6 +88,7 @@ export async function submitReport(userInput) {
  * @param {string} [adminId] - Admin who made the change (for timeline)
  */
 export async function updateReportStatus(reportId, newStatus, adminId = null) {
+  const supabase = getSupabase()
   const { data: report, error: fetchErr } = await supabase
     .from('reports')
     .select('id, report_id, status')
@@ -149,6 +156,7 @@ async function triggerEmailNotification(reportId, newStatus) {
  * @returns {Promise<Array>}
  */
 export async function listReports(assignedTo) {
+  const supabase = getSupabase()
   const { data, error } = await supabase
     .from('reports')
     .select('*')
@@ -167,6 +175,7 @@ export async function listReports(assignedTo) {
  * Get a single report by its public report_id (for tracking).
  */
 export async function getReportById(reportId) {
+  const supabase = getSupabase()
   const { data, error } = await supabase
     .from('reports')
     .select('*')
@@ -185,6 +194,7 @@ export async function getReportById(reportId) {
  * Get timeline entries for a report (for admin UI).
  */
 export async function getReportTimeline(reportId) {
+  const supabase = getSupabase()
   const { data, error } = await supabase
     .from('report_timeline_log')
     .select('*')
@@ -206,6 +216,7 @@ export async function getReportTimeline(reportId) {
  * @deprecated Prefer submitReport() for the multi-stage algorithm.
  */
 export async function insertReport(data) {
+  const supabase = getSupabase()
   const { data: row, error } = await supabase
     .from('incident_reports')
     .insert({
@@ -234,6 +245,7 @@ export async function insertReport(data) {
  * Upload a report photo to Supabase Storage.
  */
 export async function uploadReportPhoto(file, filename) {
+  const supabase = getSupabase()
   const ext = (filename || '').split('.').pop() || 'jpg'
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 

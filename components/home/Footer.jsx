@@ -17,7 +17,7 @@ export default function SdgDevFooter() {
       </div>
 
       {/* footer content */}
-      <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-4 py-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-5 sm:px-6 py-6">
 
         <p
           className={[

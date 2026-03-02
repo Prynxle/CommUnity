@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { poppins } from "../../lib/fonts";
+import { addMyReportId } from "../../lib/reportIdStorage";
+import { FiCopy } from "react-icons/fi";
 
 export default function SubmitReportSection() {
   const [locationCategory, setLocationCategory] = useState("");
@@ -39,6 +41,16 @@ export default function SubmitReportSection() {
 
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [message, setMessage] = useState("");
+  const [submittedReportId, setSubmittedReportId] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyReportId = useCallback((reportId) => {
+    if (!reportId) return;
+    navigator.clipboard.writeText(reportId).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, []);
 
   // label size (small)
   const smallLabel = "text-[14px] sm:text-[15px] font-semibold text-gray-800";
@@ -51,6 +63,7 @@ export default function SubmitReportSection() {
     e.preventDefault();
     setStatus("loading");
     setMessage("");
+    setSubmittedReportId(null);
 
     // ✅ manual required validation for custom dropdowns
     if (!category) {
@@ -83,6 +96,9 @@ export default function SubmitReportSection() {
         return;
       }
 
+      const reportId = data.report_id ?? null;
+      setSubmittedReportId(reportId);
+      if (reportId) addMyReportId(reportId);
       setStatus("success");
       setMessage("Report submitted successfully. Thank you.");
 
@@ -97,7 +113,7 @@ export default function SubmitReportSection() {
   }
 
   return (
-    <section id="submit-report" className="relative border-b border-gray-200 bg-white">
+    <section id="submit-report" className="relative overflow-hidden border-b border-gray-200 bg-white">
       {/* page background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-44 top-24 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[110px]" />
@@ -106,7 +122,7 @@ export default function SubmitReportSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/60 to-white" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 py-10 sm:py-14 lg:px-8 overflow-hidden">
         <div className="mb-6 border-b-4 border-blue-600 pb-6">
           <h2 className={`${poppins.className} text-[28px] font-bold text-gray-900 sm:text-[34px]`}>
             Report an Incident or Concern
@@ -118,7 +134,7 @@ export default function SubmitReportSection() {
 
         <div className="grid gap-5 lg:grid-cols-[0.95fr_1.35fr]">
           {/* LEFT */}
-          <aside className="rounded-2xl border border-gray bg-white p-5 shadow-[0_8px_32px_rgba(38,28,193,0.12)]">
+          <aside className="rounded-2xl border border-gray bg-white p-4 sm:p-5 shadow-[0_8px_32px_rgba(38,28,193,0.12)]">
             <div className="text-[18px] font-semibold text-gray-800 sm:text-[20px]">Before you submit</div>
 
             <ul className="mt-3 space-y-2.5 text-[16px] text-gray-700 sm:text-[18px]">
@@ -174,13 +190,13 @@ export default function SubmitReportSection() {
                 <div className="mt-1 text-[16px] text-white/90 sm:text-[15px]">All fields marked * are required.</div>
               </div>
 
-              <span className="rounded-full border border-white/35 bg-white/95 px-4 py-2 text-[15px] font-semibold text-gray-700">
+              <span className="shrink-0 rounded-full border border-white/35 bg-white/95 px-3 sm:px-4 py-2 text-[13px] sm:text-[15px] font-semibold text-gray-700">
                 Confidential
               </span>
             </div>
 
             {/* ✅ Form body: plain white (NO subtle yellow inside) */}
-            <div className="relative z-10 bg-white px-5 py-5">
+            <div className="relative z-10 bg-white px-4 sm:px-5 py-4 sm:py-5">
               <form className="space-y-5" onSubmit={handleSubmit}>
                 {message && (
                   <div
@@ -191,7 +207,29 @@ export default function SubmitReportSection() {
                         : "border-red-500/25 bg-red-100 text-red-800",
                     ].join(" ")}
                   >
-                    {message}
+                    <p>{message}</p>
+                    {status === "success" && submittedReportId && (
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                        <span className="text-[13px] font-semibold text-green-900">Your Report ID:</span>
+                        <div className="flex min-w-0 items-center gap-2 rounded-lg border border-green-300/50 bg-white/80 px-3 py-2 font-mono text-[13px] text-gray-900">
+                          <span className="truncate">{submittedReportId}</span>
+                          <button
+                            type="button"
+                            onClick={() => copyReportId(submittedReportId)}
+                            className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-[12px] font-semibold text-gray-700 hover:bg-gray-100"
+                          >
+                            <FiCopy className="h-3.5 w-3.5" />
+                            {copied ? "Copied!" : "Copy"}
+                          </button>
+                        </div>
+                        <a
+                          href="#track"
+                          className="text-[13px] font-semibold text-green-800 underline underline-offset-2 hover:text-green-900"
+                        >
+                          Track this report →
+                        </a>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -316,7 +354,7 @@ export default function SubmitReportSection() {
                 </label>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-1">
+                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-1">
                   <button
                     type="reset"
                     className="h-10 rounded-xl border border-gray-200 bg-white px-4 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-50"
@@ -334,7 +372,7 @@ export default function SubmitReportSection() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="h-10 rounded-xl border border-blue-600 bg-gradient-to-b from-blue-600 to-blue-500 px-5 text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(38,28,193,0.10)] transition hover:shadow-[0_12px_32px_rgba(38,28,193,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-10 rounded-xl border border-blue-600 bg-gradient-to-b from-blue-600 to-blue-500 px-5 text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(38,28,193,0.10)] transition hover:shadow-[0_12px_32px_rgba(38,28,193,0.18)] disabled:cursor-not-allowed disabled:opacity-60 order-first sm:order-none"
                   >
                     {status === "loading" ? "Submitting…" : "Submit Report"}
                   </button>

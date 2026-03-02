@@ -136,7 +136,7 @@ export default function Chatbot() {
         <button
           onClick={() => setIsOpen(true)}
           className={[
-            "fixed bottom-6 right-6 z-[9999] pointer-events-auto",
+            "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] pointer-events-auto",
             "group grid place-items-center",
             "h-14 w-14 rounded-full",
             "bg-gradient-to-b from-[#2F5BFF] to-[#261CC1]",
@@ -155,8 +155,8 @@ export default function Chatbot() {
       {isOpen && (
         <div
           className={[
-            "fixed bottom-6 right-6 z-[9999] pointer-events-auto",
-            "w-[360px] sm:w-[400px] h-[560px]",
+            "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] pointer-events-auto",
+            "w-[calc(100vw-2rem)] max-w-[400px] sm:w-[400px] h-[min(560px,85vh)]",
             "rounded-3xl bg-white",
             "shadow-[0_24px_80px_rgba(38,28,193,0.22)]",
             "overflow-hidden flex flex-col",

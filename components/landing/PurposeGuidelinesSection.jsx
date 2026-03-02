@@ -136,34 +136,28 @@ export default function PurposeGuidelinesSection() {
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
       ].join(" ")}
     >
-      {/* ✅ BACKGROUND: solid/light (NO ombre) */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[#F8FAFF]" />
 
-      <div className="mx-auto w-full max-w-6xl px-4">
+      <div className="mx-auto w-full max-w-6xl px-5 sm:px-6">
         {/* Header */}
-        <div className="max-w-3xl">
-          <div className="mx-auto max-w-6xl px-4">
-            <h2
-              className={[
-                encodesans.className,
-                "font-semibold text-[#0F172A]",
-                // ✅ responsive sizing
-                "text-[clamp(1.6rem,4.2vw,3rem)]",
-                // ✅ wrap on small screens, force one line on bigger screens
-                "whitespace-normal md:whitespace-nowrap",
-                // ✅ prevent ugly cut
-                "break-words",
-              ].join(" ")}
-            >
-              Our Purpose &amp; Reporting Guidelines
-            </h2>
-            <div className="mt-4 flex items-center gap-3">
-              <div className="mt-4 h-[5px] w-28 rounded-full bg-[#FFEB00]" />
-            </div>
+        <div className="max-w-3xl mx-auto text-center">
+          <h2
+            className={[
+              encodesans.className,
+              "font-semibold text-[#0F172A]",
+              "text-[clamp(1.6rem,4.2vw,3rem)]",
+              "whitespace-normal md:whitespace-nowrap",
+              "break-words",
+            ].join(" ")}
+          >
+            Our Purpose &amp; Reporting Guidelines
+          </h2>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <div className="h-[5px] w-28 rounded-full bg-[#FFEB00]" />
           </div>
         </div>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1.25fr_.95fr]">
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1.25fr_.95fr] max-w-5xl mx-auto">
           {/* LEFT */}
           <div className="grid gap-6">
             <InfoCard
@@ -185,7 +179,7 @@ export default function PurposeGuidelinesSection() {
             />
           </div>
 
-          {/* RIGHT (OMBREEEEE REMOVED) */}
+    
           <div
             className="
               group relative overflow-hidden rounded-[34px]
@@ -196,8 +190,8 @@ export default function PurposeGuidelinesSection() {
             "
           >
             {/* Tabs (pill + sliding indicator) */}
-            <div className="relative border-b border-[#261CC1]/12 bg-[#261CC1] px-5 pt-5">
-              <div className="relative inline-flex items-center gap-1 rounded-full border border-[#261CC1]/15 bg-white p-1 shadow-[0_12px_28px_rgba(15,23,42,.10)]">
+            <div className="relative border-b border-[#261CC1]/12 bg-[#261CC1] px-5 sm:px-6 pt-5">
+              <div className="relative flex w-full min-w-0 items-center gap-1 rounded-full border border-[#261CC1]/15 bg-white p-1 shadow-[0_12px_28px_rgba(15,23,42,.10)]">
                 {tabs.map((t) => {
                   const isActive = active === t.key;
                   return (
@@ -209,7 +203,8 @@ export default function PurposeGuidelinesSection() {
                         if (node) tabRefs.current[t.key] = node;
                       }}
                       className={[
-                        "relative z-10 rounded-full px-4 py-2.5 text-[15px] sm:text-[16px] font-semibold transition-colors duration-300",
+                        "relative z-10 min-w-0 flex-1 rounded-full px-2.5 py-2 sm:px-4 sm:py-2.5 text-[13px] sm:text-[15px] font-semibold transition-colors duration-300",
+                        "whitespace-nowrap overflow-hidden text-ellipsis text-center",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFEB00]/40",
                         isActive ? "text-[#0B1B57]" : "text-slate-500 hover:text-slate-800",
                       ].join(" ")}
@@ -222,7 +217,7 @@ export default function PurposeGuidelinesSection() {
 
                 <div
                   className="
-    pointer-events-none absolute top-1 bottom-1 rounded-full
+    pointer-events-none absolute top-1/2 -translate-y-1/2 h-9 rounded-full
     bg-[#FFEB00]
     shadow-[0_8px_18px_rgba(255,235,0,.25)]
     ring-1 ring-[#FFEB00]/60
@@ -256,12 +251,7 @@ export default function PurposeGuidelinesSection() {
   );
 }
 
-/**
- * ✅ Left cards now match the “School Updates” style:
- * - White card
- * - Left accent bar (Vision = yellow, Mission = blue)
- * - Clean border + shadow
- */
+
 function InfoCard({ variant = "vision", eyebrow, icon, title, desc, chips = [] }) {
   const accentBar = variant === "mission" ? "bg-[#1D4ED8]" : "bg-[#FFEB00]";
 
