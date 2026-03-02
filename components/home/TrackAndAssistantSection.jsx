@@ -1,7 +1,9 @@
 // components/home/TrackAndAssistantSection.jsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { getMyReportIds, addMyReportId } from "../../lib/reportIdStorage";
+import { FiCopy, FiPlus } from "react-icons/fi";
 
 const STATUS_LABELS = {
   SUBMITTED: "Submitted",
@@ -29,6 +31,15 @@ export default function TrackAndAssistantSection() {
   const [result, setResult] = useState(null); // { report, timeline }
   const [hasSearched, setHasSearched] = useState(false);
 
+  const [myReportIds, setMyReportIds] = useState([]);
+  const [myReports, setMyReports] = useState([]);
+  const [myReportsLoading, setMyReportsLoading] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [addIdInput, setAddIdInput] = useState("");
+  const [addIdLoading, setAddIdLoading] = useState(false);
+  const [addIdError, setAddIdError] = useState("");
+  const [copiedId, setCopiedId] = useState(null);
+
   const report = result?.report ?? null;
   const timeline = useMemo(
     () => (result?.timeline ?? []).slice().sort((a, b) => new Date(a.changed_at) - new Date(b.changed_at)),
@@ -40,6 +51,77 @@ export default function TrackAndAssistantSection() {
     if (timeline.length === 0) return report.created_at ?? null;
     return timeline[timeline.length - 1]?.changed_at ?? report.created_at ?? null;
   }, [report, timeline]);
+
+  useEffect(() => {
+    setMyReportIds(getMyReportIds());
+  }, []);
+
+  useEffect(() => {
+    if (myReportIds.length === 0) {
+      setMyReports([]);
+      return;
+    }
+    let cancelled = false;
+    setMyReportsLoading(true);
+    Promise.all(
+      myReportIds.map((id) =>
+        fetch(`/api/reports/${encodeURIComponent(id)}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+      )
+    ).then((results) => {
+      if (cancelled) return;
+      setMyReports(results.filter(Boolean).map((d) => ({ report_id: d.report?.report_id, ...d })));
+      setMyReportsLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [myReportIds]);
+
+  const copyReportId = useCallback((id) => {
+    if (!id) return;
+    navigator.clipboard.writeText(id).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  }, []);
+
+  const filteredMyReports = useMemo(() => {
+    if (!searchFilter.trim()) return myReports;
+    const term = searchFilter.trim().toLowerCase();
+    return myReports.filter((r) => r.report?.report_id?.toLowerCase().includes(term));
+  }, [myReports, searchFilter]);
+
+  async function handleAddByReportId(e) {
+    e.preventDefault();
+    const trimmed = addIdInput.trim();
+    if (!trimmed) return;
+    setAddIdError("");
+    setAddIdLoading(true);
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(trimmed)}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAddIdError(data?.error || "Report not found.");
+        return;
+      }
+      addMyReportId(trimmed);
+      setMyReportIds(getMyReportIds());
+      setAddIdInput("");
+      setResult(data);
+      setHasSearched(true);
+      setError("");
+    } catch {
+      setAddIdError("Unable to fetch report.");
+    } finally {
+      setAddIdLoading(false);
+    }
+  }
+
+  function handleViewReport(data) {
+    setResult(data);
+    setHasSearched(true);
+    setError("");
+  }
 
   async function handleTrack(e) {
     e.preventDefault();
@@ -65,6 +147,10 @@ export default function TrackAndAssistantSection() {
         throw new Error(data.error || "Unable to find report right now.");
       }
       setResult(data);
+      if (data?.report?.report_id) {
+        addMyReportId(data.report.report_id);
+        setMyReportIds(getMyReportIds());
+      }
     } catch (err) {
       setError(err.message);
       setResult(null);
@@ -87,7 +173,7 @@ export default function TrackAndAssistantSection() {
     });
 
   return (
-    <section id="track" className="relative border-b border-gray-200 bg-white py-10 sm:py-14 scroll-mt-28">
+    <section id="track" className="relative overflow-hidden border-b border-gray-200 bg-white py-10 sm:py-14 scroll-mt-28">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-56 top-24 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[120px]" />
@@ -96,7 +182,7 @@ export default function TrackAndAssistantSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/55 to-white" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8 overflow-hidden">
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-[28px] font-bold text-gray-900 sm:text-[34px]">Track your Reports</h2>
@@ -105,6 +191,103 @@ export default function TrackAndAssistantSection() {
             current status.
           </p>
           <div className="mt-4 h-[4px] w-full bg-[#2F5BFF]" />
+        </div>
+
+        {/* Your reports */}
+        <div className="mb-8 overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
+          <div className="relative overflow-hidden border-b border-gray-200 px-4 py-4 text-white sm:px-5 sm:py-5">
+            <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
+            <div className="absolute inset-0 z-0 bg-black/10" />
+            <div className="relative z-10">
+              <div className="text-[18px] font-bold sm:text-[20px]">Your reports</div>
+              <div className="mt-1 text-[13px] text-white/90 sm:text-[14px]">
+                Reports you’ve submitted or added. Search by Report ID below.
+              </div>
+            </div>
+          </div>
+          <div className="p-4 sm:p-5 space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <input
+                type="text"
+                value={searchFilter}
+                onChange={(e) => setSearchFilter(e.target.value)}
+                placeholder="Search by Report ID..."
+                className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-200/40"
+              />
+              <form onSubmit={handleAddByReportId} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <input
+                  type="text"
+                  value={addIdInput}
+                  onChange={(e) => { setAddIdInput(e.target.value); setAddIdError(""); }}
+                  placeholder="Add by Report ID"
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-300 sm:w-56"
+                />
+                <button
+                  type="submit"
+                  disabled={addIdLoading}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-600 bg-blue-600 px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  <FiPlus className="h-4 w-4" />
+                  {addIdLoading ? "Adding…" : "Add"}
+                </button>
+              </form>
+            </div>
+            {addIdError && (
+              <p className="text-[13px] text-red-600">{addIdError}</p>
+            )}
+            {myReportsLoading ? (
+              <p className="py-6 text-center text-[14px] text-gray-500">Loading your reports…</p>
+            ) : filteredMyReports.length === 0 ? (
+              <p className="py-6 text-center text-[14px] text-gray-500">
+                {myReportIds.length === 0
+                  ? "No reports yet. Submit a report above or add one by Report ID."
+                  : "No reports match your search."}
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {filteredMyReports.map((item) => {
+                  const r = item.report;
+                  if (!r) return null;
+                  return (
+                    <div
+                      key={r.report_id}
+                      className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-[13px] text-gray-700 truncate">{r.report_id}</span>
+                          <button
+                            type="button"
+                            onClick={() => copyReportId(r.report_id)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[12px] font-semibold text-gray-700 hover:bg-gray-100"
+                          >
+                            <FiCopy className="h-3 w-3" />
+                            {copiedId === r.report_id ? "Copied!" : "Copy"}
+                          </button>
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="text-[14px] font-medium text-gray-900">{r.category}</span>
+                          <StatusPill status={r.status} />
+                        </div>
+                        {r.created_at && (
+                          <div className="mt-1 text-[12px] text-gray-500">
+                            Submitted {new Date(r.created_at).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" })}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleViewReport(item)}
+                        className="shrink-0 rounded-xl border border-blue-600 bg-white px-4 py-2 text-[13px] font-semibold text-blue-600 hover:bg-blue-50"
+                      >
+                        View details
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main Card */}
@@ -126,7 +309,7 @@ export default function TrackAndAssistantSection() {
           {/* Controls */}
           <form
             onSubmit={handleTrack}
-            className="flex flex-col gap-3 border-b border-gray-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 border-b border-gray-200 px-4 sm:px-5 py-4 sm:flex-row sm:items-end sm:justify-between"
           >
             <div className="flex-1">
               <label className="block text-[13px] font-semibold text-gray-700 sm:text-[14px]">

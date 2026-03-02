@@ -50,7 +50,7 @@ export default function FAQ() {
       </div>
 
       {/* TITLE */}
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-6xl px-10 sm:px-12">
         <h2 className={`${encodesans.className} text-center text-4xl sm:text-5xl font-semibold text-[#0F172A]`}>
           Frequently Asked Questions (FAQs)
         </h2>
@@ -59,7 +59,7 @@ export default function FAQ() {
       </div>
 
       {/* FAQ LIST */}
-      <div className="mx-auto mt-14 max-w-4xl px-4">
+      <div className="mx-auto mt-14 max-w-4xl px-9 sm:px-=10">
         <div className="space-y-5">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;

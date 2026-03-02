@@ -54,7 +54,7 @@ export default function CommUpdatesSection() {
   );
 
   return (
-    <section id="dashboard" className="relative border-b border-gray-200 bg-white py-10 sm:py-14 scroll-mt-28">
+    <section id="dashboard" className="relative overflow-hidden border-b border-gray-200 bg-white py-10 sm:py-14 scroll-mt-28">
       {/* ✅ light mode background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-56 top-24 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[120px]" />
@@ -63,7 +63,7 @@ export default function CommUpdatesSection() {
         <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/60 to-white" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 space-y-12 overflow-hidden">
         {/* Header */}
         <div className="mb-2">
           <h2 className={`${publicsans.className} text-[30px] font-bold text-gray-900 sm:text-[38px]`}>
@@ -78,7 +78,7 @@ export default function CommUpdatesSection() {
         {/* ✅ Main Dashboard Card */}
         <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)]">
           {/* ✅ Ombre top */}
-          <div className="relative overflow-hidden px-6 py-6 text-white">
+            <div className="relative overflow-hidden px-4 sm:px-6 py-5 sm:py-6 text-white">
             {/* gradient base */}
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
             {/* glows */}
@@ -102,7 +102,7 @@ export default function CommUpdatesSection() {
           <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
             {/* Left: Updates */}
             <div className="border-gray-200 lg:border-r">
-              <div className="flex items-end justify-between gap-4 px-6 pt-6">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 px-4 sm:px-6 pt-4 sm:pt-6">
                 <h3 className={`${publicsans.className} text-[20px] font-bold text-gray-900 sm:text-[22px]`}>
                   School Updates
                 </h3>
@@ -111,7 +111,7 @@ export default function CommUpdatesSection() {
                 </span>
               </div>
 
-              <div className="px-6 pb-6 pt-4 grid gap-4 md:grid-cols-3 lg:grid-cols-1">
+              <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-3 sm:pt-4 grid gap-4 grid-cols-1 lg:grid-cols-1">
                 {updates.map((u) => (
                   <UpdateCard key={u.title} title={u.title} text={u.text} tag={u.tag} meta={u.meta} />
                 ))}
@@ -119,7 +119,7 @@ export default function CommUpdatesSection() {
             </div>
 
             {/* Right: Stats */}
-            <div className="px-6 py-6">
+            <div className="px-4 sm:px-6 py-4 sm:py-6">
               <h3 className={`${publicsans.className} text-[20px] font-bold text-gray-900 sm:text-[22px]`}>
                 Case Overview
               </h3>
@@ -139,7 +139,7 @@ export default function CommUpdatesSection() {
             What students say
           </h3>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {quotes.map((q, i) => (
               <QuoteCard key={i} text={q.text} who={q.who} />
             ))}

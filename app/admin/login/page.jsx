@@ -72,10 +72,10 @@ export default function AdminLoginPage() {
         />
       </div>
 
-      <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center p-4">
+      <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center overflow-y-auto px-4 py-16 sm:py-8">
         <Link
           href="/landingpage"
-          className="absolute left-4 top-4 text-sm text-white/90 hover:text-white"
+          className="absolute left-4 top-4 text-sm text-white/90 hover:text-white z-20"
         >
           ← Back to site
         </Link>
@@ -86,19 +86,19 @@ export default function AdminLoginPage() {
             width={120}
             height={120}
             alt="CommUnity"
-            className="drop-shadow"
+            className="drop-shadow h-16 w-16 sm:h-20 sm:w-20 md:h-[120px] md:w-[120px] object-contain"
           />
           <h1
-            className={`${poppins.className} mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl`}
+            className={`${poppins.className} mt-4 text-xl font-bold tracking-tight text-white sm:text-2xl md:text-3xl`}
           >
             Admin Portal
           </h1>
-          <p className="mt-2 text-white/80">
+          <p className="mt-2 text-sm sm:text-base text-white/80">
             Sign in to manage incident reports
           </p>
         </div>
 
-        <div className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-md sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 p-5 shadow-2xl backdrop-blur-md sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <label className="block text-sm font-medium text-white/95">
               Admin account
@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
             <select
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-lg border border-transparent bg-neutral-200/90 px-4 py-3 text-slate-900 outline-none focus:border-neutral-300 focus:ring-2 focus:ring-white/40"
+              className="w-full rounded-lg border border-transparent bg-neutral-200/90 px-4 py-3 text-sm sm:text-base text-slate-900 outline-none focus:border-neutral-300 focus:ring-2 focus:ring-white/40"
               required
             >
               <option value="">Select account...</option>

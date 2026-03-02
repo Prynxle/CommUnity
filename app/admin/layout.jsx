@@ -46,9 +46,9 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F8FAFF]">
       <AdminHeader admin={admin} />
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="mx-auto w-full max-w-7xl overflow-x-hidden">{children}</main>
     </div>
   );
 }
@@ -71,7 +71,7 @@ function AdminHeader({ admin }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1C0770] shadow-sm">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
         <Link
           href="/admin"
           className={`${poppins.className} flex items-center gap-2 text-lg font-semibold text-white`}

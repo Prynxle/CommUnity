@@ -73,7 +73,7 @@ export default function HowItWorks() {
   const togglePopover = (index) => setActiveIndex((prev) => (prev === index ? null : index));
 
   return (
-    <section className="relative py-28 text-slate-900">
+    <section className="relative overflow-hidden py-24 sm:py-28 text-slate-900">
       {/* LIGHT MODE BACKGROUND */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white" />
@@ -83,7 +83,7 @@ export default function HowItWorks() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(15,23,42,0.06),transparent_55%)]" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6">
               <h2 className={`${encodesans.className} text-center text-4xl sm:text-5xl font-semibold text-[#0F172A]`}>
                 How it works
               </h2>
@@ -93,7 +93,7 @@ export default function HowItWorks() {
       </div>
 
       {/* STEPS */}
-      <div className="mx-auto mt-16 max-w-6xl px-4">
+      <div className="mx-auto mt-16 max-w-6xl px-5 sm:px-6">
         <div className="flex flex-col items-center justify-center gap-10 md:flex-row md:gap-12">
           {steps.map((step, index) => (
             <Step

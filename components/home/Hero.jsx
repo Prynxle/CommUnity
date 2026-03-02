@@ -14,11 +14,11 @@ export default function HeroSection() {
         backgroundPosition: "center",
       }}
     >
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
+      <div className="relative max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-32">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
           {/* Left */}
           <div>
-            <h1 className="mt-20 text-[56px] font-semibold leading-[1.2] tracking-[-0.02em] text-white sm:text-[72px]">
+            <h1 className="mt-14 sm:mt-20 text-[32px] sm:text-[48px] lg:text-[72px] font-semibold leading-[1.15] tracking-[-0.02em] text-white">
               Empowering every{" "}
               <span className="text-[#FFEB00] drop-shadow-[0_10px_30px_rgba(255,235,0,.18)]">
                 voice.
@@ -30,7 +30,7 @@ export default function HeroSection() {
               </span>
             </h1>
 
-            <p className="mt-5 max-w-2xl text-[20px] sm:text-[22px] leading-relaxed text-white/90">
+            <p className="mt-4 sm:mt-5 max-w-2xl text-[15px] sm:text-[18px] lg:text-[22px] leading-relaxed text-white/90">
               <span className="text-white font-semibold">Welcome to the OLOPSC-Community!</span>{" "}
               A school-ready system for reporting incidents, welfare concerns, and campus issues — with
               responsible routing and{" "}
@@ -43,10 +43,10 @@ export default function HeroSection() {
           </div>
 
           {/* Right card */}
-          <div className="relative max-w-[500px] w-full flex items-center mt-4 lg:mt-8">
+          <div className="relative max-w-[500px] w-full flex items-center mt-4 lg:mt-8 mx-auto lg:mx-0">
             <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[30px] bg-gradient-to-b from-[#261CC1]/14 via-[#261CC1]/08 to-[#FFEB00]/08 blur-xl" />
 
-            <div className="w-full rounded-[26px] border border-slate-200 bg-white/80 px-8 py-10 shadow-[0_14px_50px_rgba(15,23,42,.10)] backdrop-blur-xl flex flex-col justify-center">
+            <div className="w-full rounded-[26px] border border-slate-200 bg-white/80 px-5 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 shadow-[0_14px_50px_rgba(15,23,42,.10)] backdrop-blur-xl flex flex-col justify-center">
               <div className="mb-5 text-base font-semibold tracking-[0.2em] text-slate-500">
                 WHAT YOU CAN DO
               </div>
@@ -78,8 +78,8 @@ export default function HeroSection() {
                 />
               </div>
 
-              <div className="flex items-center justify-between gap-4 border-t border-slate-200 pt-4 mt-5">
-                <div className="flex items-start gap-3 text-[13px] text-slate-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-slate-200 pt-4 mt-5">
+                <div className="flex items-start gap-3 text-[13px] sm:text-[13px] text-slate-600">
                   <RedWarningTriangle className="mt-1 h-5 w-5 shrink-0" />
                   <div className="leading-relaxed">
                     If immediate danger exists, contact emergency services first — then submit a report.
@@ -88,7 +88,7 @@ export default function HeroSection() {
 
                 <a
                   href="#hotlines"
-                  className="shrink-0 inline-flex items-center justify-center h-10 rounded-2xl border border-[#261CC1]/25 bg-[#261CC1]/10 px-4 text-[14px] leading-none font-semibold text-[#1a138f] hover:bg-[#261CC1]/14 hover:-translate-y-0.5 transition"
+                  className="shrink-0 w-full sm:w-auto inline-flex items-center justify-center h-10 rounded-2xl border border-[#261CC1]/25 bg-[#261CC1]/10 px-4 text-[14px] leading-none font-semibold text-[#1a138f] hover:bg-[#261CC1]/14 hover:-translate-y-0.5 transition"
                 >
                   Get Help
                 </a>

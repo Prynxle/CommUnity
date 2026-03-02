@@ -40,8 +40,7 @@ export default function DesignedForSchool() {
   );
 
   return (
-    <section className="relative w-full py-20">
-      {/* ✅ Branded light background (white + blue/yellow) */}
+    <section id="designed" className="relative w-full overflow-hidden py-16 sm:py-20 scroll-mt-[88px] ">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-white">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white to-slate-50" />
         <div className="absolute -left-44 top-12 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[110px]" />
@@ -49,7 +48,7 @@ export default function DesignedForSchool() {
         <div className="absolute left-1/2 top-10 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-[#FFEB00]/22 blur-[120px]" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4">
+      <div className="mx-auto max-w-6xl px-10 sm:px-9">
         <h2 className={`${encodesans.className} text-4xl sm:text-5xl font-semibold text-[#0F172A]`}>
           Designed for a school environment
         </h2>
@@ -93,12 +92,10 @@ function SlideRevealCard({ title, desc, img, alt }) {
           priority={false}
         />
 
-        {/* ✅ soft branded tint */}
         <div className="pointer-events-none absolute -left-14 -top-14 h-52 w-52 rounded-full bg-[#261CC1]/14 blur-[90px]" />
         <div className="pointer-events-none absolute -right-16 -bottom-16 h-52 w-52 rounded-full bg-[#FFEB00]/18 blur-[100px]" />
       </div>
 
-      {/* DEFAULT bottom label */}
       <div
         className="
           absolute inset-x-0 bottom-0
@@ -119,12 +116,10 @@ function SlideRevealCard({ title, desc, img, alt }) {
             Learn more details
           </div>
 
-          {/* ✅ small yellow accent line */}
           <div className="mt-4 h-[3px] w-14 rounded-full bg-[#FFEB00]/90" />
         </div>
       </div>
 
-      {/* HOVER PANEL */}
       <div
         className="
           absolute inset-x-0 bottom-0
