@@ -193,20 +193,31 @@ export default function TrackAndAssistantSection() {
           <div className="mt-4 h-[4px] w-full bg-[#2F5BFF]" />
         </div>
 
-        {/* Your reports */}
-        <div className="mb-8 overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
-          <div className="relative overflow-hidden border-b border-gray-200 px-4 py-4 text-white sm:px-5 sm:py-5">
+        {/* Unified card: Your reports + Tracker */}
+        <div className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
+          {/* Single top bar */}
+          <div className="relative overflow-hidden px-4 py-5 text-white sm:px-6 sm:py-6">
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
+            <div className="absolute -left-20 top-[-60px] z-0 h-[260px] w-[260px] rounded-full bg-[#2F5BFF]/55 blur-[120px]" />
+            <div className="absolute right-[-60px] bottom-[-80px] z-0 h-[260px] w-[260px] rounded-full bg-[#FFEB00]/55 blur-[130px]" />
             <div className="absolute inset-0 z-0 bg-black/10" />
+
             <div className="relative z-10">
-              <div className="text-[18px] font-bold sm:text-[20px]">Your reports</div>
-              <div className="mt-1 text-[13px] text-white/90 sm:text-[14px]">
-                Reports you’ve submitted or added. Search by Report ID below.
+              <div className="text-[20px] font-bold sm:text-[22px]">Reports</div>
+              <div className="mt-1 text-[14px] text-white/95 sm:text-[15px]">
+                View your submitted reports and track any Report ID.
               </div>
             </div>
           </div>
-          <div className="p-4 sm:p-5 space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+
+          {/* Your reports controls + list */}
+          <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-[14px] font-semibold text-gray-700">Your reports</div>
+              <div className="text-[12px] text-gray-500">Saved on this device</div>
+            </div>
+
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <input
                 type="text"
                 value={searchFilter}
@@ -218,7 +229,10 @@ export default function TrackAndAssistantSection() {
                 <input
                   type="text"
                   value={addIdInput}
-                  onChange={(e) => { setAddIdInput(e.target.value); setAddIdError(""); }}
+                  onChange={(e) => {
+                    setAddIdInput(e.target.value);
+                    setAddIdError("");
+                  }}
                   placeholder="Add by Report ID"
                   className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-300 sm:w-56"
                 />
@@ -232,88 +246,77 @@ export default function TrackAndAssistantSection() {
                 </button>
               </form>
             </div>
-            {addIdError && (
-              <p className="text-[13px] text-red-600">{addIdError}</p>
-            )}
-            {myReportsLoading ? (
-              <p className="py-6 text-center text-[14px] text-gray-500">Loading your reports…</p>
-            ) : filteredMyReports.length === 0 ? (
-              <p className="py-6 text-center text-[14px] text-gray-500">
-                {myReportIds.length === 0
-                  ? "No reports yet. Submit a report above or add one by Report ID."
-                  : "No reports match your search."}
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {filteredMyReports.map((item) => {
-                  const r = item.report;
-                  if (!r) return null;
-                  return (
-                    <div
-                      key={r.report_id}
-                      className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-[13px] text-gray-700 truncate">{r.report_id}</span>
-                          <button
-                            type="button"
-                            onClick={() => copyReportId(r.report_id)}
-                            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[12px] font-semibold text-gray-700 hover:bg-gray-100"
-                          >
-                            <FiCopy className="h-3 w-3" />
-                            {copiedId === r.report_id ? "Copied!" : "Copy"}
-                          </button>
-                        </div>
-                        <div className="mt-1 flex flex-wrap items-center gap-2">
-                          <span className="text-[14px] font-medium text-gray-900">{r.category}</span>
-                          <StatusPill status={r.status} />
-                        </div>
-                        {r.created_at && (
-                          <div className="mt-1 text-[12px] text-gray-500">
-                            Submitted {new Date(r.created_at).toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" })}
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleViewReport(item)}
-                        className="shrink-0 rounded-xl border border-blue-600 bg-white px-4 py-2 text-[13px] font-semibold text-blue-600 hover:bg-blue-50"
+
+            {addIdError && <p className="mt-2 text-[13px] text-red-600">{addIdError}</p>}
+
+            <div className="mt-4">
+              {myReportsLoading ? (
+                <p className="py-6 text-center text-[14px] text-gray-500">Loading your reports…</p>
+              ) : filteredMyReports.length === 0 ? (
+                <p className="py-6 text-center text-[14px] text-gray-500">
+                  {myReportIds.length === 0
+                    ? "No reports yet. Submit a report above or add one by Report ID."
+                    : "No reports match your search."}
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {filteredMyReports.map((item) => {
+                    const r = item.report;
+                    if (!r) return null;
+                    return (
+                      <div
+                        key={r.report_id}
+                        className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
                       >
-                        View details
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Main Card */}
-        <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_18px_55px_rgba(38,28,193,0.12)]">
-          {/* Top bar */}
-          <div className="relative overflow-hidden px-5 py-6 text-white">
-            <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
-            <div className="absolute -left-20 top-[-60px] z-0 h-[260px] w-[260px] rounded-full bg-[#2F5BFF]/60 blur-[120px]" />
-            <div className="absolute right-[-60px] bottom-[-80px] z-0 h-[260px] w-[260px] rounded-full bg-[#FFEB00]/60 blur-[130px]" />
-
-            <div className="relative z-10">
-              <div className="text-[20px] font-bold sm:text-[22px]">Report Tracker</div>
-              <div className="mt-1 text-[14px] text-white/95 sm:text-[15px]">
-                Enter your Report ID to view the latest status and history.
-              </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-[13px] text-gray-700 truncate">{r.report_id}</span>
+                            <button
+                              type="button"
+                              onClick={() => copyReportId(r.report_id)}
+                              className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[12px] font-semibold text-gray-700 hover:bg-gray-100"
+                            >
+                              <FiCopy className="h-3 w-3" />
+                              {copiedId === r.report_id ? "Copied!" : "Copy"}
+                            </button>
+                          </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span className="text-[14px] font-medium text-gray-900">{r.category}</span>
+                            <StatusPill status={r.status} />
+                          </div>
+                          {r.created_at && (
+                            <div className="mt-1 text-[12px] text-gray-500">
+                              Submitted{" "}
+                              {new Date(r.created_at).toLocaleString(undefined, {
+                                dateStyle: "short",
+                                timeStyle: "short",
+                              })}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleViewReport(item)}
+                          className="shrink-0 rounded-xl border border-blue-600 bg-white px-4 py-2 text-[13px] font-semibold text-blue-600 hover:bg-blue-50"
+                        >
+                          View details
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Controls */}
+          {/* Tracker controls */}
           <form
             onSubmit={handleTrack}
-            className="flex flex-col gap-3 border-b border-gray-200 px-4 sm:px-5 py-4 sm:flex-row sm:items-end sm:justify-between"
+            className="flex flex-col gap-3 border-b border-gray-200 px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-6"
           >
             <div className="flex-1">
               <label className="block text-[13px] font-semibold text-gray-700 sm:text-[14px]">
-                Report ID
+                Track by Report ID
               </label>
               <div className="mt-1 relative">
                 <input
@@ -345,26 +348,26 @@ export default function TrackAndAssistantSection() {
           </form>
 
           {error && (
-            <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-[13px] text-red-800 sm:text-[14px]">
+            <div className="border-b border-red-100 bg-red-50 px-4 py-3 text-[13px] text-red-800 sm:px-6 sm:text-[14px]">
               {error}
             </div>
           )}
 
-          {/* Body */}
+          {/* Details */}
           <div className="grid gap-0 lg:grid-cols-[1.05fr_1.25fr]">
             {/* Left: summary */}
             <div className="border-gray-200 lg:border-r">
-              <div className="px-4 py-4">
+              <div className="px-4 py-4 sm:px-6">
                 <div className="text-[14px] font-semibold text-gray-700 sm:text-[15px]">Report summary</div>
               </div>
 
-              <div className="px-4 pb-5">
+              <div className="px-4 pb-5 sm:px-6">
                 <div className="rounded-2xl border border-gray-200 bg-white p-5">
                   {!report ? (
                     <div className="text-[14px] text-gray-600">
                       {hasSearched
                         ? "No report found for that Report ID. Double-check the ID from your confirmation screen or email."
-                        : "Enter your Report ID above and click Track report to see its status."}
+                        : "Select a report above (View details) or track by Report ID to see its status."}
                     </div>
                   ) : (
                     <>
@@ -384,14 +387,8 @@ export default function TrackAndAssistantSection() {
                       </div>
 
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                        <InfoBox
-                          label="Location"
-                          value={locationDisplay || "—"}
-                        />
-                        <InfoBox
-                          label="Assigned office"
-                          value={assignedLabel || "—"}
-                        />
+                        <InfoBox label="Location" value={locationDisplay || "—"} />
+                        <InfoBox label="Assigned office" value={assignedLabel || "—"} />
                         <InfoBox
                           label="Submitted"
                           value={
@@ -403,10 +400,7 @@ export default function TrackAndAssistantSection() {
                               : "—"
                           }
                         />
-                        <InfoBox
-                          label="Last update"
-                          value={lastUpdateDisplay || "Waiting for update"}
-                        />
+                        <InfoBox label="Last update" value={lastUpdateDisplay || "Waiting for update"} />
                       </div>
                     </>
                   )}
@@ -415,14 +409,14 @@ export default function TrackAndAssistantSection() {
             </div>
 
             {/* Right: timeline */}
-            <div className="px-4 py-4">
+            <div className="px-4 py-4 sm:px-6">
               <div className="text-[14px] font-semibold text-gray-700 sm:text-[15px]">Status timeline</div>
 
               <div className="mt-3 rounded-2xl border border-gray-200 bg-white p-5">
                 {!report ? (
                   <div className="text-[14px] text-gray-600">
                     You’ll see a step-by-step timeline of how your report is being processed here once a valid Report ID
-                    is found.
+                    is selected.
                   </div>
                 ) : (
                   <Timeline report={report} timeline={timeline} />
