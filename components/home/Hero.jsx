@@ -9,7 +9,7 @@ export default function HeroSection() {
       className="relative overflow-hidden"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/olopsc.jpg')",
+          "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('/olopsc.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -26,7 +26,7 @@ export default function HeroSection() {
               <br />
               Strengthening every{" "}
               <span className="text-[#FFEB00] drop-shadow-[0_10px_30px_rgba(255,235,0,.18)]">
-                standard.
+                future.
               </span>
             </h1>
 

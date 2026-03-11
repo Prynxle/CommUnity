@@ -23,6 +23,12 @@ export default function Header() {
 
   const emailLabel = profile.email || "user@example.com";
 
+  const profileInitial =
+    (profile.firstName?.trim()?.[0] ||
+      profile.lastName?.trim()?.[0] ||
+      profile.email?.trim()?.[0] ||
+      "U").toUpperCase();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -49,30 +55,57 @@ export default function Header() {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
-  // ✅ Active underline based on hash
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const handleHashChange = () => {
-      setActiveHash(window.location.hash || "#home");
+    const sections = ["home", "track", "submit-report", "hotlines"];
+
+    const updateActiveSection = () => {
+      const scrollY = window.scrollY + 140;
+      let current = "#home";
+
+      for (const id of sections) {
+        const element = document.getElementById(id);
+        if (!element) continue;
+
+        const top = element.offsetTop;
+        const bottom = top + element.offsetHeight;
+
+        if (scrollY >= top && scrollY < bottom) {
+          current = `#${id}`;
+        }
+      }
+
+      setActiveHash((prev) => (prev !== current ? current : prev));
     };
 
-    handleHashChange();
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    updateActiveSection();
+
+    window.addEventListener("scroll", updateActiveSection);
+    window.addEventListener("hashchange", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("hashchange", updateActiveSection);
+    };
   }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
+
     const handleClick = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) setMenuOpen(false);
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [menuOpen]);
 
   const handleLogout = () => {
     setMenuOpen(false);
+    setMobileOpen(false);
     clearUserProfile();
     setProfile({ firstName: "", lastName: "", email: "" });
     router.push("/login");
@@ -82,148 +115,196 @@ export default function Header() {
     () => [
       { label: "Home", href: "#home" },
       { label: "Track", href: "#track" },
-      { label: "Dashboard", href: "#dashboard" },
+      { label: "Create a Report", href: "#submit-report" },
+      { label: "Emergency", href: "#hotlines" },
     ],
     []
   );
 
   return (
     <header className="sticky top-0 z-[999]">
-      <div className="bg-[#1C0770] border-b border-white/10">
+      <div className="border-b border-white/10 bg-[#1C0770]">
         <div className="w-full px-5 sm:px-6 lg:px-10">
           <div className="flex h-[74px] items-center justify-between">
-            <a href="#home" className="flex items-center gap-3">
-              <img src="/olopsclogo.png" alt="OLOPSC Logo" className="h-12 w-auto" />
-              <div className="leading-tight">
+            <a href="#home" className="flex min-w-0 items-center gap-3">
+              <img src="/olopsclogo.png" alt="OLOPSC Logo" className="h-12 w-auto shrink-0" />
+              <div className="min-w-0 leading-tight">
                 <div
-                  className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
+                  className={`${georama.className} text-[14px] font-extrabold tracking-wide text-white sm:text-[16px] md:text-[18px]`}
                 >
-                  OLOPSC<span className="text-[#FFEB00]">-COMMUNITY</span>
+                  <span className="text-white">COMM</span>
+                  <span className="text-[#FFEB00]">UNITY</span>
                 </div>
-                <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
+                <div className="truncate text-[11px] text-white/75 sm:text-[12px] md:text-[14px]">
                   Student Concern & Incident Reporting
                 </div>
               </div>
             </a>
 
-            <div className="flex items-center gap-6">
-              {/* Desktop nav (same as before) */}
-              <nav className={`${poppins.className} hidden md:flex items-center gap-8 text-sm md:text-base text-white/80`}>
-                {nav.map((item) => {
-                  const isActive = activeHash === item.href;
-                  return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      className="group relative font-medium transition text-white/85 hover:text-white"
-                    >
-                      <span
-                        className={[
-                          "absolute -bottom-2 left-0 h-[2px] bg-[#FFEB00] transition-all duration-300",
-                          isActive ? "w-full" : "w-0 group-hover:w-full",
-                        ].join(" ")}
-                      />
-                      {item.label}
-                    </a>
-                  );
-                })}
+            <div className="flex items-center gap-2 sm:gap-5">
+              <nav
+                className={`${poppins.className} hidden items-center gap-8 text-sm text-white/80 md:flex md:text-base`}
+              >
+                {nav
+                  .filter((item) => item.href === "#home" || item.href === "#track")
+                  .map((item) => {
+                    const isActive = activeHash === item.href;
+
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        className="group relative font-medium text-white/85 transition hover:text-white"
+                      >
+                        <span
+                          className={[
+                            "absolute -bottom-2 left-0 h-[2px] bg-[#FFEB00] transition-all duration-300",
+                            isActive ? "w-full" : "w-0 group-hover:w-full",
+                          ].join(" ")}
+                        />
+                        {item.label}
+                      </a>
+                    );
+                  })}
               </nav>
 
-              {/* Desktop buttons (same as before) */}
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="hidden items-center gap-4 sm:flex">
                 <a
                   href="#submit-report"
                   className={[
-                    "group relative overflow-hidden rounded-2xl border border-white/20 h-10 px-5 inline-flex items-center justify-center",
-                    "text-[14px] leading-none font-semibold transition-all duration-300",
-                    "bg-white/10 text-white hover:-translate-y-1 hover:bg-white/14",
-                    "hover:shadow-[0_22px_55px_rgba(0,0,0,0.28)]",
+                    "group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl border px-5",
+                    "text-[14px] font-semibold transition-all duration-300",
+                    activeHash === "#submit-report"
+                      ? "border-[#FFEB00]/45 bg-white/18 text-white -translate-y-1 shadow-[0_20px_45px_rgba(255,235,0,0.12)]"
+                      : "border-white/20 bg-white/10 text-white hover:-translate-y-1 hover:bg-white/14",
                   ].join(" ")}
                 >
                   <span className="relative z-10">Create a Report</span>
                 </a>
-
-                <a
-                  href="#hotlines"
-                  className={[
-                    "group relative overflow-hidden rounded-2xl border border-white/15 h-10 px-5 inline-flex items-center justify-center",
-                    "text-[14px] leading-none font-semibold transition-all duration-300",
-                    "bg-white text-[#1a138f] hover:-translate-y-1",
-                    "shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]",
-                  ].join(" ")}
-                >
-                  <span className="relative z-10">Emergency</span>
-                </a>
               </div>
 
-              {/* ✅ Hamburger EXACTLY like landing page */}
-              <button
-                type="button"
-                onClick={() => setMobileOpen((v) => !v)}
+              <a
+                href="#hotlines"
                 className={[
-                  "md:hidden inline-flex items-center justify-center",
-                  "h-10 w-10 rounded-xl",
-                  "text-white",
-                  "transition-all duration-300",
-                  "hover:bg-white/15",
+                  "group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-2xl border px-5",
+                  "text-[14px] font-semibold text-white transition-all duration-300",
+                  activeHash === "#hotlines"
+                    ? "border-red-300 bg-red-700 -translate-y-1 shadow-[0_20px_45px_rgba(239,68,68,0.24)]"
+                    : "border-red-400/40 bg-red-600 hover:-translate-y-1 hover:bg-red-700",
                 ].join(" ")}
-                aria-label={mobileOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileOpen}
               >
-                {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-              </button>
+                <span className="relative z-10">Emergency</span>
+              </a>
 
-              {/* Profile dropdown (same as before) */}
-              <div className="relative flex items-center gap-2 text-sm" ref={menuRef}>
-                <span className="hidden sm:inline text-white/90">Hi, {greetingName}!</span>
+              <div className="relative hidden items-center gap-2 text-sm sm:flex" ref={menuRef}>
+                <span className="hidden text-white/90 sm:inline">Hi, {greetingName}!</span>
 
                 <button
                   type="button"
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
                   onClick={() => setMenuOpen((prev) => !prev)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/15 transition"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#FFEB00]/30 bg-gradient-to-br from-white/15 via-white/10 to-[#FFEB00]/10 text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 hover:border-[#FFEB00]/50"
                 >
-                  <span className="text-xs">👤</span>
+                  <span className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,235,0,0.18),transparent_60%)]" />
+                  <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#FFEB00] text-[12px] font-bold text-[#1C0770]">
+                    {profileInitial}
+                  </span>
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-3 w-56 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl">
-                    <p className="text-xs text-slate-500 mb-2">Signed in as</p>
-                    <p className="text-sm font-semibold text-slate-900 mb-3">{emailLabel}</p>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="w-full rounded-xl bg-slate-50 border border-slate-200 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-100 transition"
-                    >
-                      Log out
-                    </button>
+                  <div className="absolute right-0 top-full mt-4 w-[300px] overflow-hidden rounded-[26px] border border-white/15 bg-[#1C0770] shadow-[0_20px_55px_rgba(10,6,40,0.45)]">
+                    <div className="p-5">
+                      <p className="mb-2 text-[12px] uppercase tracking-wider text-white/60">
+                        Signed in as
+                      </p>
+
+                      <div className="mb-4 rounded-xl border border-white/10 bg-white/10 px-3 py-3">
+                        <p className="break-words text-sm font-semibold text-white">
+                          {emailLabel}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full rounded-xl border border-[#FFEB00]/40 bg-[#FFEB00] py-2.5 text-sm font-semibold text-[#1C0770] transition hover:brightness-95"
+                      >
+                        Log out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
+
+              <button
+                type="button"
+                onClick={() => setMobileOpen((v) => !v)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white transition hover:bg-white/15 md:hidden"
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileOpen}
+              >
+                {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+              </button>
             </div>
           </div>
 
-          {/* ✅ Mobile dropdown EXACTLY like landing page */}
           <div
             className={[
-              "md:hidden overflow-hidden transition-all duration-300",
-              mobileOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0",
+              "overflow-hidden transition-all duration-300 md:hidden",
+              mobileOpen ? "max-h-[620px] opacity-100" : "max-h-0 opacity-0",
             ].join(" ")}
           >
-            <div className="px-4 sm:px-6 pb-5">
-              <div className="mt-2 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-3">
+            <div className="px-4 pb-5 sm:px-6">
+              <div className="mt-2 rounded-2xl border border-white/10 bg-white/10 p-3 backdrop-blur-xl">
+                <div className="mb-3 rounded-2xl border border-white/10 bg-white/10 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="group relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#FFEB00]/30 bg-gradient-to-br from-white/15 via-white/10 to-[#FFEB00]/10 text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)]">
+                      <span className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,235,0,0.18),transparent_60%)]" />
+                      <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#FFEB00] text-[12px] font-bold text-[#1C0770]">
+                        {profileInitial}
+                      </span>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-white">
+                        Hi, {greetingName}!
+                      </p>
+                      <p className="break-all text-xs text-white/70">{emailLabel}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="mt-3 w-full rounded-xl border border-white/15 bg-white/10 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                  >
+                    Log out
+                  </button>
+                </div>
+
                 <nav className={`${poppins.className} flex flex-col`}>
-                  {nav.map((item) => (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="rounded-xl px-3 py-3 text-white/90 transition hover:bg-white/10"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
+                  {nav
+                    .filter((item) => item.href === "#home" || item.href === "#track")
+                    .map((item) => {
+                      const isActive = activeHash === item.href;
+
+                      return (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={[
+                            "rounded-xl px-3 py-3 transition",
+                            isActive
+                              ? "bg-white/14 text-white"
+                              : "text-white/90 hover:bg-white/10",
+                          ].join(" ")}
+                        >
+                          {item.label}
+                        </a>
+                      );
+                    })}
                 </nav>
 
                 <div className="mt-3 h-px bg-white/10" />
@@ -232,30 +313,19 @@ export default function Header() {
                   <a
                     href="#submit-report"
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-xl px-3 py-3 text-white/90 transition hover:bg-white/10"
-                  >
-                    Create a Report
-                  </a>
-
-                  <a
-                    href="#hotlines"
-                    onClick={() => setMobileOpen(false)}
                     className={[
-                      "inline-flex items-center justify-center",
-                      "rounded-xl px-3 py-3",
-                      "border border-white/25 bg-white/10",
-                      "text-sm font-semibold text-white",
-                      "transition-all duration-300",
-                      "hover:bg-white/15",
+                      "rounded-xl px-3 py-3 text-center transition",
+                      activeHash === "#submit-report"
+                        ? "bg-white/14 text-white"
+                        : "text-white/90 hover:bg-white/10",
                     ].join(" ")}
                   >
-                    Emergency
+                    Create a Report
                   </a>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </header>

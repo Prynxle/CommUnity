@@ -20,7 +20,6 @@ export default function HomePage() {
         <Hero />
         <SubmitReportSection />
         <TrackAndAssistantSection />
-        <CommUpdates />
         <HotlinesSection />
       </main>
 
