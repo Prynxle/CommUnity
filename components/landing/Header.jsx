@@ -15,6 +15,7 @@ export default function Header({ hideHero = false }) {
   const nav = useMemo(
     () => [
       { label: "Home", href: homeHref },
+      { label: "About Us", href: "/landingpage/aboutus" },
       { label: "SDG", href: "/landingpage/sdg" }
     ],
     [homeHref]
@@ -42,9 +43,8 @@ export default function Header({ hideHero = false }) {
       {!hideHero && (
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div
-            className="absolute inset-0 bg-[url('/olopsc.jpg')] bg-cover bg-center bg-no-repeat"
-            aria-hidden="true"
-          />
+            className="absolute inset-0 bg-[url('/olopscLogo1.jpg')] bg-cover bg-center bg-no-repeat"
+            aria-hidden="true" />
           <div className="absolute inset-0 bg-black/55" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/60" />
         </div>
@@ -63,7 +63,7 @@ export default function Header({ hideHero = false }) {
                   OLOPSC<span className="text-[#FFEB00]">-COMMUNITY</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
-                  Student Concern &amp; Incident Reporting
+                   Incident Reporting System
                 </div>
               </div>
             </Link>

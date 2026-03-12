@@ -7,7 +7,7 @@ import HowItWorks from "../../components/landing/HowItWorks.jsx";
 import FAQ from "../../components/landing/FAQ.jsx";
 import Footer from "../../components/landing/Footer.jsx";
 import FeaturesSchoolSection from "../../components/landing/FeaturesSchoolSection.jsx";
-import PurposeGuidelinesSection from "../../components/landing/PurposeGuidelinesSection.jsx";
+import CommUpdatesSection from "../../components/home/CommUpdates.jsx";
 
 
 const Page = () => {
@@ -15,7 +15,7 @@ const Page = () => {
     <div>
       <Header />
       <FeaturesSchoolSection />
-      <PurposeGuidelinesSection />
+      <CommUpdatesSection />
       <HowItWorks />   {/* ✅ ADDED HERE */}
       <FAQ />
       <Footer />
