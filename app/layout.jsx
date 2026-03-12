@@ -3,7 +3,7 @@
 import "./globals.css";
 import LoadingGate from "../components/shared/LoadingGate";
 
-export const metadata = { title: "Community" };
+export const metadata = { title: "CommUnity" };
 
 export default function RootLayout({ children }) {
   return (
