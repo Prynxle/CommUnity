@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getAdminSession } from "../../lib/adminStorage";
 import { poppins, georama, inter } from "../../lib/fonts";
-import { FiCopy, FiArrowRight, FiPhone } from "react-icons/fi";
+import { FiCopy, FiArrowRight, FiPhone, FiX, FiImage } from "react-icons/fi";
 
 const REPORT_STATUS = {
   SUBMITTED: "SUBMITTED",
@@ -54,9 +55,19 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [statusModal, setStatusModal] = useState({ open: false, report: null, note: "" });
+  const [photoModal, setPhotoModal] = useState({ open: false, photoUrl: null });
 
+  const router = useRouter();
   const admin = getAdminSession();
   const token = admin?.access_token;
+
+  useEffect(() => {
+    if (!admin?.access_token) {
+      router.replace("/admin/login");
+      return;
+    }
+  }, [admin, router]);
 
   useEffect(() => {
     if (!token) return;
@@ -87,7 +98,7 @@ export default function AdminDashboardPage() {
     });
   }, []);
 
-  async function updateStatus(reportId, newStatus) {
+  async function updateStatus(reportId, newStatus, note = "") {
     if (!token) return;
     setUpdatingId(reportId);
     try {
@@ -97,7 +108,7 @@ export default function AdminDashboardPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, note }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error ?? "Update failed");
@@ -110,6 +121,24 @@ export default function AdminDashboardPage() {
       setUpdatingId(null);
     }
   }
+
+  const openStatusModal = (report) => {
+    const nextStatus = NEXT_STATUS[report.status];
+    if (!nextStatus) return;
+    setStatusModal({ open: true, report, note: "" });
+  };
+
+  const closeStatusModal = () => {
+    setStatusModal({ open: false, report: null, note: "" });
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!statusModal.report) return;
+    const { report, note } = statusModal;
+    const nextStatus = NEXT_STATUS[report.status];
+    await updateStatus(report.report_id, nextStatus, note);
+    closeStatusModal();
+  };
 
   const byStatus = useMemo(() => {
     const map = { SUBMITTED: [], IN_PROGRESS: [], RESOLVED: [], CLOSED: [] };
@@ -314,12 +343,22 @@ export default function AdminDashboardPage() {
                                     })}
                                   </div>
                                 )}
+                                {report.photo_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setPhotoModal({ open: true, photoUrl: report.photo_url })}
+                                    className="mt-2 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[12px] font-semibold text-blue-700 transition hover:bg-blue-100"
+                                  >
+                                    <FiImage className="h-4 w-4" />
+                                    View photo
+                                  </button>
+                                )}
                               </div>
                               <div className="shrink-0">
                                 {nextStatus ? (
                                   <button
                                     type="button"
-                                    onClick={() => updateStatus(report.report_id, nextStatus)}
+                                    onClick={() => openStatusModal(report)}
                                     disabled={isUpdating}
                                     className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#2F5BFF] bg-gradient-to-b from-[#2F5BFF] to-[#261CC1] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50 sm:w-auto"
                                   >
@@ -347,6 +386,75 @@ export default function AdminDashboardPage() {
             </div>
           )}
         </section>
+
+        {/* Status Update Modal */}
+        {statusModal.open && statusModal.report && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Update Report Status
+              </h3>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Changing status from <span className="font-medium">{STATUS_LABELS[statusModal.report.status]}</span> to{" "}
+                  <span className="font-medium">{STATUS_LABELS[NEXT_STATUS[statusModal.report.status]]}</span>
+                </p>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Add a note (optional):
+                </label>
+                <textarea
+                  value={statusModal.note}
+                  onChange={(e) => setStatusModal(prev => ({ ...prev, note: e.target.value }))}
+                  placeholder="Describe what actions were taken..."
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#2F5BFF] focus:outline-none focus:ring-1 focus:ring-[#2F5BFF]"
+                  rows={4}
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={closeStatusModal}
+                  className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleStatusUpdate}
+                  disabled={updatingId === statusModal.report.report_id}
+                  className="flex-1 rounded-lg bg-[#2F5BFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#261CC1] disabled:opacity-50"
+                >
+                  {updatingId === statusModal.report.report_id ? "Updating..." : "Update Status"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Photo Viewer Modal */}
+        {photoModal.open && photoModal.photoUrl && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="relative max-w-2xl w-full max-h-[85vh] flex flex-col">
+              <button
+                onClick={() => setPhotoModal({ open: false, photoUrl: null })}
+                className="absolute -top-10 right-0 text-white hover:text-gray-300 transition"
+              >
+                <FiX className="h-6 w-6" />
+              </button>
+              <div className="flex-1 overflow-auto rounded-xl bg-white flex items-center justify-center">
+                <img
+                  src={photoModal.photoUrl}
+                  alt="Report photo"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+              <button
+                onClick={() => setPhotoModal({ open: false, photoUrl: null })}
+                className="mt-4 w-full rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

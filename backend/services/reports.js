@@ -87,7 +87,7 @@ export async function submitReport(userInput) {
  * @param {string} newStatus - One of SUBMITTED, IN_PROGRESS, RESOLVED, CLOSED
  * @param {string} [adminId] - Admin who made the change (for timeline)
  */
-export async function updateReportStatus(reportId, newStatus, adminId = null) {
+export async function updateReportStatus(reportId, newStatus, adminId = null, note = null) {
   const supabase = getSupabase()
   const { data: report, error: fetchErr } = await supabase
     .from('reports')
@@ -115,6 +115,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
     previous_status: currentStatus,
     new_status: newStatus,
     admin_id: adminId,
+    note: note ?? null,
   })
 
   if (logErr) {

@@ -1,0 +1,44 @@
+{
+  "documents": [
+    {
+      "id": "emergency_contacts",
+      "title": "Emergency Contacts",
+      "content": "Campus Security: 0949-673-3019, Campus Clinic/Nurse: 0942-0055, National Emergency: 161, Guidance Office: 0948-0979, Discipline Office: 0942-3618, Admin Office: 0682-9572"
+    },
+    {
+      "id": "submit_report",
+      "title": "How to Submit a Report",
+      "content": "To submit a report: 1) Click 'Create a Report', 2) Choose Category + Location, 3) Describe what happened (include when/where), 4) Add evidence (optional), 5) Submit. Clear details help the right office respond faster."
+    },
+    {
+      "id": "track_report",
+      "title": "How to Track a Report",
+      "content": "To track your report: 1) Go to the 'Track' page, 2) Enter your reference/ID, 3) View status updates and actions. If you don't have your ID, check your confirmation message/email."
+    },
+    {
+      "id": "anonymous_reporting",
+      "title": "Anonymous Reporting",
+      "content": "If anonymous reporting is enabled by your school, you'll see an 'Anonymous' option when submitting. If it's not visible, it may be disabled by the admin."
+    },
+    {
+      "id": "report_details",
+      "title": "What Details to Include",
+      "content": "Include: What happened, Date/time (approx. is okay), Location (floor/room/area), Who was involved (if known), Evidence (optional). Avoid posting sensitive info publicly—use the report form instead."
+    },
+    {
+      "id": "emergency_button",
+      "title": "Emergency Button Location",
+      "content": "You can use the 'Emergency' button in the header (top navigation). It's meant for quick access to urgent hotlines and help."
+    },
+    {
+      "id": "report_privacy",
+      "title": "Who Sees My Report",
+      "content": "Reports are typically visible only to authorized school personnel (e.g., guidance/admin/security) depending on category. If your school supports anonymous reports, your identity won't be shown to reviewers."
+    },
+    {
+      "id": "school_policies",
+      "title": "School Policies",
+      "content": "All reports are handled confidentially. Student welfare includes bullying, harassment, academic concerns, and mental health issues. Medical-related incidents should be reported immediately. For emergencies, call 161 first."
+    }
+  ]
+}

@@ -7,6 +7,36 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+const TERMS_TEXT = (
+  <>
+    <p className="text-sm leading-relaxed">
+      By creating an account, you agree to use CommUnity responsibly and only submit information that is accurate.
+      Your reports may be reviewed by authorized staff (e.g., guidance counselors, clinic personnel, or security).
+    </p>
+    <p className="text-sm leading-relaxed">
+      Do not use this system to harass or retaliate against others. Abuse may result in account suspension.
+    </p>
+    <p className="text-sm leading-relaxed">
+      For full terms, contact your school administration.
+    </p>
+  </>
+)
+
+const PRIVACY_TEXT = (
+  <>
+    <p className="text-sm leading-relaxed">
+      We store the information you provide (name, email, report details) so that staff can respond.
+      Your report is only accessible to authorized personnel based on the report category.
+    </p>
+    <p className="text-sm leading-relaxed">
+      If your school supports anonymous reporting, your identity will not be attached to the report.
+    </p>
+    <p className="text-sm leading-relaxed">
+      We do not share your data with third parties except as required by law.
+    </p>
+  </>
+)
+
 export default function RegistrationCard({ containerless = false }) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -17,6 +47,7 @@ export default function RegistrationCard({ containerless = false }) {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [modalType, setModalType] = useState(null) // 'terms' | 'privacy' | null
   const router = useRouter()
 
   const Inner = (
@@ -184,7 +215,22 @@ export default function RegistrationCard({ containerless = false }) {
             onChange={(e) => setAgreeToTerms(e.target.checked)}
           />
           <label className="text-white/90 cursor-pointer">
-            I agree to the <button type="button" className="underline hover:text-white">Terms of Service</button> and <button type="button" className="underline hover:text-white">Privacy Policy</button>
+            I agree to the{' '}
+            <button
+              type="button"
+              className="underline hover:text-white"
+              onClick={() => setModalType('terms')}
+            >
+              Terms of Service
+            </button>{' '}
+            and{' '}
+            <button
+              type="button"
+              className="underline hover:text-white"
+              onClick={() => setModalType('privacy')}
+            >
+              Privacy Policy
+            </button>
           </label>
         </div>
 
@@ -196,6 +242,7 @@ export default function RegistrationCard({ containerless = false }) {
           {isLoading ? 'Creating account…' : 'Create Account'}
         </button>
 
+
         {(errorMessage || successMessage) && (
           <p
             className={`text-sm ${
@@ -206,6 +253,46 @@ export default function RegistrationCard({ containerless = false }) {
           </p>
         )}
       </form>
+
+      {modalType && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {modalType === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                </h3>
+                <p className="mt-1 text-sm text-gray-600">
+                  {modalType === 'terms'
+                    ? 'Please read our terms carefully before creating an account.'
+                    : 'Learn how we handle and protect your personal information.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalType(null)}
+                className="rounded-full bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-4 text-sm text-gray-700">
+              {modalType === 'terms' ? TERMS_TEXT : PRIVACY_TEXT}
+            </div>
+
+            <div className="mt-6 text-right">
+              <button
+                type="button"
+                onClick={() => setModalType(null)}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Divider */}
       <div className="my-6 flex items-center gap-4">
