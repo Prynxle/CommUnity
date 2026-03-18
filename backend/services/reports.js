@@ -146,7 +146,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null, no
 /**
  * Placeholder for Phase 5 email. Replace with your email provider (Resend, SendGrid, etc.).
  */
-async function triggerEmailNotification(reportId, newStatus) {
+async function triggerEmailNotification(_reportId, _newStatus) {
   if (process.env.SKIP_REPORT_EMAIL === 'true') return
   // TODO: e.g. await sendEmail({ to: report.email, template: 'status-update', reportId, newStatus })
 }

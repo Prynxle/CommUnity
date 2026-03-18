@@ -1,5 +1,3 @@
-// app/layout.jsx
-/* eslint-disable react-refresh/only-export-components */
 import "./globals.css";
 import LoadingGate from "../components/shared/LoadingGate";
 

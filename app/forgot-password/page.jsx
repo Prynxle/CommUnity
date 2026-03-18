@@ -8,8 +8,6 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
-  const router = useRouter();
-
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus("submitting");

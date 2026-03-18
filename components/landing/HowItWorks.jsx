@@ -71,6 +71,9 @@ export default function HowItWorks() {
   }, []);
 
   const togglePopover = (index) => setActiveIndex((prev) => (prev === index ? null : index));
+  const setPopoverRef = (index, element) => {
+    popoverRefs.current[index] = element;
+  };
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-28 text-slate-900">
@@ -102,7 +105,7 @@ export default function HowItWorks() {
               index={index}
               activeIndex={activeIndex}
               togglePopover={togglePopover}
-              popoverRefs={popoverRefs}
+              setPopoverRef={setPopoverRef}
               isLast={index === steps.length - 1}
             />
           ))}
@@ -130,7 +133,7 @@ export default function HowItWorks() {
   );
 }
 
-function Step({ step, index, activeIndex, togglePopover, popoverRefs, isLast }) {
+function Step({ step, index, activeIndex, togglePopover, setPopoverRef, isLast }) {
   const isActive = activeIndex === index;
   const Icon = step.Icon;
 
@@ -172,7 +175,7 @@ function Step({ step, index, activeIndex, togglePopover, popoverRefs, isLast }) 
         {isActive && (
           <div
             id={`how-step-${index}`}
-            ref={(el) => (popoverRefs.current[index] = el)}
+            ref={(el) => setPopoverRef(index, el)}
             className={[
               "animate-pop absolute top-[110%] left-1/2 -translate-x-1/2",
               "w-[300px] sm:w-[340px]",

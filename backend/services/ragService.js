@@ -1,7 +1,10 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import fs from 'fs';
 import path from 'path';
 
 // No AI: rule-based response generator
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 // Load knowledge base
 let knowledgeBase = [];
@@ -186,6 +189,13 @@ Instructions:
 - For emergencies, always prioritize calling emergency numbers
 
 Answer:`;
+
+    if (!genAI) {
+      return {
+        text: generateFallbackAnswer(userQuery),
+        sources: relevantDocs.map((doc) => ({ id: doc.id, title: doc.title })),
+      };
+    }
 
     const model = genAI.getGenerativeModel({
       // Use a supported model (text-bison is generally available in the Google Generative AI API).
