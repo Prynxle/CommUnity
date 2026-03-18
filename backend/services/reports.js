@@ -87,7 +87,7 @@ export async function submitReport(userInput) {
  * @param {string} newStatus - One of SUBMITTED, IN_PROGRESS, RESOLVED, CLOSED
  * @param {string} [adminId] - Admin who made the change (for timeline)
  */
-export async function updateReportStatus(reportId, newStatus, adminId = null) {
+export async function updateReportStatus(reportId, newStatus, adminId = null, note = null) {
   const supabase = getSupabase()
   const { data: report, error: fetchErr } = await supabase
     .from('reports')
@@ -115,6 +115,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
     previous_status: currentStatus,
     new_status: newStatus,
     admin_id: adminId,
+    note: note ?? null,
   })
 
   if (logErr) {
@@ -145,7 +146,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
 /**
  * Placeholder for Phase 5 email. Replace with your email provider (Resend, SendGrid, etc.).
  */
-async function triggerEmailNotification(reportId, newStatus) {
+async function triggerEmailNotification(_reportId, _newStatus) {
   if (process.env.SKIP_REPORT_EMAIL === 'true') return
   // TODO: e.g. await sendEmail({ to: report.email, template: 'status-update', reportId, newStatus })
 }

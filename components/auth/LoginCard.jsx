@@ -181,7 +181,7 @@ export default function LoginCard({ containerless = false }) {
             <input type="checkbox" className="h-4 w-4 rounded border-white/30 bg-transparent text-white focus:ring-white/30" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
             Remember me
           </label>
-          <button type="button" className="text-white/90 hover:text-white underline underline-offset-4">Forgot Password?</button>
+          <Link href="/forgot-password" className="text-white/90 hover:text-white underline underline-offset-4">Forgot Password?</Link>
         </div>
 
         <button

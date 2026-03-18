@@ -28,6 +28,7 @@ export async function PATCH(request, { params }) {
     const body = await request.json().catch(() => ({}))
     const newStatus = (body.status || '').toUpperCase()
     const adminId = body.admin_id ?? admin.role
+    const note = body.note ?? null
 
     if (!ALLOWED_STATUSES.includes(newStatus)) {
       return NextResponse.json(
@@ -36,7 +37,7 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    const result = await updateReportStatus(reportId, newStatus, adminId)
+    const result = await updateReportStatus(reportId, newStatus, adminId, note)
     return NextResponse.json(result)
   } catch (error) {
     if (error?.code === 'INVALID_TRANSITION') {

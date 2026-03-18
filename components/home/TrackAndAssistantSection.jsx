@@ -468,18 +468,20 @@ function Timeline({ report, timeline }) {
 
   for (const entry of timeline) {
     const key = entry.new_status || entry.status;
+    const description = entry.note
+      ? entry.note
+      : key === "IN_PROGRESS"
+        ? "An authorized office has started working on your report."
+        : key === "RESOLVED"
+          ? "The concern has been addressed by the assigned office."
+          : key === "CLOSED"
+            ? "The case is closed. No further action is scheduled."
+            : "Status updated by the assigned office.";
     steps.push({
       status: key,
       label: STATUS_LABELS[key] || key,
       at: entry.changed_at,
-      description:
-        key === "IN_PROGRESS"
-          ? "An authorized office has started working on your report."
-          : key === "RESOLVED"
-            ? "The concern has been addressed by the assigned office."
-            : key === "CLOSED"
-              ? "The case is closed. No further action is scheduled."
-              : "Status updated by the assigned office.",
+      description,
     });
   }
 

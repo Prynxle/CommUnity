@@ -7,16 +7,6 @@ import { FiArrowRight, FiMessageCircle, FiX, FiAlertTriangle } from "react-icons
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [messages, setMessages] = useState([
-    {
-      sender: "bot",
-      text: "Hi! I’m MARI — your school virtual assistant. How can I help you today?",
-    },
-  ]);
-
-  const [input, setInput] = useState("");
-  const scrollRef = useRef(null);
-
   // ✅ Pre-empted questions: Emergency + Website FAQs
   const quickActions = useMemo(
     () => [
@@ -40,90 +30,92 @@ export default function Chatbot() {
     []
   );
 
-  function fakeBotReply(userText) {
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text: "Hi! I'm your campus assistant. How can I help you today?",
+      buttons: quickActions,
+    },
+  ]);
+
+  const [input, setInput] = useState("");
+  const scrollRef = useRef(null);
+
+
+  function generateFollowUpButtons(userText) {
     const t = userText.toLowerCase();
 
-    if (
-      t.includes("emergency") ||
-      t.includes("security") ||
-      t.includes("clinic") ||
-      t.includes("nurse") ||
-      t.includes("hotline")
-    ) {
-      return (
-        "If this is urgent:\n" +
-        "• Campus Security: 0949-673-3019\n" +
-        "• Campus Clinic/Nurse: 0942-0055\n" +
-        "• National Emergency: 161\n\n" +
-        "If someone is in immediate danger, call 161 first.\n" +
-        "Want me to show the full campus hotline directory?"
-      );
+    if (t.includes("emergency") || t.includes("security") || t.includes("clinic")) {
+      return [
+        { label: "Show full hotline list", text: "Show me the full campus hotline directory." },
+        { label: "How do I submit a report?", text: "How do I submit a report?" },
+      ];
     }
 
-    if (t.includes("submit") || (t.includes("report") && !t.includes("track"))) {
-      return (
-        "To submit a report:\n" +
-        "1) Click “Create a Report”\n" +
-        "2) Choose Category + Location\n" +
-        "3) Describe what happened (include when/where)\n" +
-        "4) Add evidence (optional)\n" +
-        "5) Submit\n\n" +
-        "Tip: Clear details help the right office respond faster."
-      );
+    if (t.includes("submit") || t.includes("report") && !t.includes("track")) {
+      return [
+        { label: "What details should I include?", text: "What details should I include in a report?" },
+        { label: "Can I report anonymously?", text: "Can I report anonymously?" },
+      ];
     }
 
     if (t.includes("track")) {
-      return (
-        "To track your report:\n" +
-        "1) Go to the “Track” page\n" +
-        "2) Enter your reference/ID\n" +
-        "3) View status updates and actions\n\n" +
-        "If you don’t have your ID, check your confirmation message/email."
-      );
+      return [
+        { label: "How do I submit a report?", text: "How do I submit a report?" },
+        { label: "Emergency contacts", text: "What are the emergency contact numbers?" },
+      ];
     }
 
-    if (t.includes("anonymous")) {
-      return (
-        "If anonymous reporting is enabled by your school, you’ll see an “Anonymous” option when submitting.\n" +
-        "If it’s not visible, it may be disabled by the admin."
-      );
-    }
-
-    if (t.includes("details") || t.includes("include")) {
-      return (
-        "Include:\n" +
-        "• What happened\n" +
-        "• Date/time (approx. is okay)\n" +
-        "• Location (floor/room/area)\n" +
-        "• Who was involved (if known)\n" +
-        "• Evidence (optional)\n\n" +
-        "Avoid posting sensitive info publicly—use the report form instead."
-      );
-    }
-
-    if (t.includes("emergency button") || t.includes("where is the emergency")) {
-      return "You can use the “Emergency” button in the header (top navigation). It’s meant for quick access to urgent hotlines and help.";
-    }
-
-    if (t.includes("who sees") || t.includes("privacy") || t.includes("confidential")) {
-      return (
-        "Reports are typically visible only to authorized school personnel (e.g., guidance/admin/security) depending on category.\n" +
-        "If your school supports anonymous reports, your identity won’t be shown to reviewers."
-      );
-    }
-
-    return `Got it — I received: “${userText}”. (Connect me to your backend later and I’ll answer like a real assistant.)`;
+    // Default follow-up buttons
+    return quickActions.slice(0, 2).map((q) => ({ label: q.label, text: q.text }));
   }
 
-  const sendMessage = (overrideText) => {
+  const sendMessage = async (overrideText) => {
     const textToSend = (overrideText ?? input).trim();
     if (!textToSend) return;
 
     const newUserMessage = { sender: "user", text: textToSend };
-    const newBotMessage = { sender: "bot", text: fakeBotReply(textToSend) };
-
-    setMessages((prev) => [...prev, newUserMessage, newBotMessage]);
+    setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
+
+    try {
+      // Call RAG API
+      const res = await fetch("/api/chat/rag", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: textToSend }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.text) {
+        const newBotMessage = {
+          sender: "bot",
+          text: data.text,
+          buttons: generateFollowUpButtons(textToSend), // Keep some interactive buttons
+        };
+        setMessages((prev) => [...prev, newBotMessage]);
+      } else {
+        // Fallback to basic response if RAG fails
+        const fallbackMessage = {
+          sender: "bot",
+          text: "I'm here to help with school reports and emergencies. What would you like to know?",
+          buttons: quickActions.slice(0, 3).map((q) => ({ label: q.label, text: q.text })),
+        };
+        setMessages((prev) => [...prev, fallbackMessage]);
+      }
+    } catch (error) {
+      console.error("Chat API error:", error);
+      // Fallback response
+      const fallbackMessage = {
+        sender: "bot",
+        text: "Sorry, I'm having trouble connecting. Please try again or contact campus support.",
+        buttons: [],
+      };
+      setMessages((prev) => [...prev, fallbackMessage]);
+    }
   };
 
   useEffect(() => {
@@ -146,7 +138,7 @@ export default function Chatbot() {
             "hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(38,28,193,0.30)]",
             "active:translate-y-0",
           ].join(" ")}
-          aria-label="Open MARI chatbot"
+          aria-label="Open campus assistant chat"
         >
           <FiMessageCircle size={22} />
         </button>
@@ -162,7 +154,7 @@ export default function Chatbot() {
             "overflow-hidden flex flex-col",
           ].join(" ")}
           role="dialog"
-          aria-label="MARI chatbot"
+          aria-label="Campus assistant chat"
         >
           <div className="relative">
             <div className="relative flex items-center justify-between gap-3 px-4 py-4 border-b border-white/10 bg-[#1C0770]">
@@ -180,7 +172,7 @@ export default function Chatbot() {
 
                 <div className="min-w-0 leading-tight">
                   <div className="text-[18px] font-extrabold tracking-wide text-white truncate">
-                    OLOPSC Chatbot
+                    Campus Assistant
                   </div>
                 </div>
               </div>
@@ -200,60 +192,12 @@ export default function Chatbot() {
             </div>
           </div>
 
-          {/* Quick actions */}
-          <div className="px-4 pt-4">
-            <div className="flex items-center justify-between">
-              <div className="text-[12.5px] font-semibold text-gray-700">Quick questions</div>
-              <span className="rounded-full border border-blue-200 bg-[#261CC1]/10 px-2.5 py-1 text-[11px] font-semibold text-[#1a138f]">
-                Tap to ask
-              </span>
-            </div>
-
-            <div className="mt-3 flex flex-wrap gap-2">
-              {quickActions.map((q) => (
-                <button
-                  key={q.label}
-                  onClick={() => sendMessage(q.text)}
-                  className={[
-                    "group inline-flex items-center gap-2",
-                    "rounded-full border border-blue-200 bg-white",
-                    "px-3 py-2",
-                    "text-[12.5px] font-semibold",
-                    q.kind === "emergency" ? "text-red-700" : "text-[#1C0770]",
-                    "shadow-[0_10px_28px_rgba(38,28,193,0.08)]",
-                    "transition hover:-translate-y-0.5 hover:bg-[#261CC1]/[0.06]",
-                  ].join(" ")}
-                >
-                  <span
-                    className={["h-2 w-2 rounded-full", q.kind === "emergency" ? "bg-red-500" : "bg-[#2F5BFF]"].join(
-                      " "
-                    )}
-                    aria-hidden="true"
-                  />
-                  <span className="whitespace-nowrap">{q.label}</span>
-                  <span className="opacity-70 group-hover:opacity-100 transition" aria-hidden="true">
-                    <FiArrowRight size={13} />
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-3 flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2">
-              <span className="mt-[2px] text-red-600">
-                <FiAlertTriangle />
-              </span>
-              <p className="text-[12px] text-red-700 leading-snug">
-                For immediate danger, call <span className="font-semibold">161</span> or Campus Security.
-              </p>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="mt-4 flex-1 overflow-hidden px-4 pb-4">
+          {/* Messages (chat bubbles) */}
+          <div className="flex-1 overflow-hidden px-4 pb-4">
             <div
               ref={scrollRef}
               className={[
-                "h-full overflow-y-auto pr-2 space-y-3",
+                "h-full overflow-y-auto pr-2 space-y-3 py-3 bg-[#F7F9FF]",
                 "scrollbar-thin scrollbar-thumb-[#cfd7ff] scrollbar-track-transparent",
               ].join(" ")}
             >
@@ -271,13 +215,30 @@ export default function Chatbot() {
                       ].join(" ")}
                     >
                       {msg.text}
+                      {isBot && msg.buttons && msg.buttons.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {msg.buttons.map((btn, i) => (
+                            <button
+                              type="button"
+                              key={i}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                sendMessage(btn.text);
+                              }}
+                              className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[12px] font-semibold text-[#1C0770] hover:bg-blue-100"
+                            >
+                              {btn.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
           {/* Input */}
           <div className="border-t border-blue-200 bg-white px-4 py-3">
             <div className="flex items-center gap-2">
