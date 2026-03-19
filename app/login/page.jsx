@@ -11,11 +11,11 @@ export default function Page() {
           beamWidth={3}
           beamHeight={50}
           beamNumber={30}
-          lightColor="#ffffff"
+          lightColor="#7070FA"
           speed={2}
           noiseIntensity={1.75}
           scale={0.2}
-          rotation={0}
+          rotation={1}
         />
       </div>
 
@@ -25,7 +25,7 @@ export default function Page() {
           <div className="flex flex-col items-center text-center">
             <Link href="/landingpage" aria-label="Go to landing page">
               <Image
-                src="/LOGO1.png"
+                src="/olopsclogo.png"
                 width={180}
                 height={180}
                 alt="CommUnity Logo"
@@ -35,7 +35,7 @@ export default function Page() {
 
             <span className="relative -top-2 sm:-top-4 tracking-[.2em] sm:tracking-[.35em] text-2xl sm:text-3xl font-bold font-georama">
               <span className="text-white">COMM</span>
-              <span className="text-orange-500">UNITY</span>
+              <span className="text-yellow-500">UNITY</span>
             </span>
           </div>
 

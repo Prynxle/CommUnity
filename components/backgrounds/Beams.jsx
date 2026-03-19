@@ -155,14 +155,14 @@ float cnoise(vec3 P){
 
 // Public component API. Reduce beamNumber/height on mobile to save GPU.
 const Beams = ({
-  beamWidth = 2,
-  beamHeight = 15,
-  beamNumber = 12,
-  lightColor = '#ffffff',
+  beamWidth = 3,
+  beamHeight = 30,
+  beamNumber = 20,
+  lightColor = '#1d01ef',
   speed = 2,
   noiseIntensity = 1.75,
   scale = 0.2,
-  rotation = 0
+  rotation = 30
 }) => {
   const meshRef = useRef(null);
   // Build the custom shader material once per relevant prop set.
