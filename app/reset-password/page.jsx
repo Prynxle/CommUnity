@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
 
             <button
               type="submit"
-              disabled={status === "submitting" || !token || !email}
+              disabled={status === "submitting" || !password || !confirm}
               className="w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition disabled:cursor-not-allowed disabled:opacity-70"
             >
               {status === "submitting" ? "Saving…" : "Reset password"}

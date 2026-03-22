@@ -7,7 +7,8 @@ import { getReportById, getReportTimeline } from '../../../../backend/services/r
  */
 export async function GET(_request, { params }) {
   try {
-    const reportId = params?.reportId
+    const { reportId } = await params
+
     if (!reportId) {
       return NextResponse.json({ error: 'Report ID required' }, { status: 400 })
     }

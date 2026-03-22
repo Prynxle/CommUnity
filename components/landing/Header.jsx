@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { FiMenu, FiX } from "react-icons/fi";
 import { georama } from "../../lib/fonts";
@@ -55,7 +56,7 @@ export default function Header({ hideHero = false }) {
         <div className="w-full px-5 sm:px-6 lg:px-10">
           <div className="flex h-[74px] items-center justify-between">
             <Link href="/landingpage" className="flex items-center gap-3">
-              <img src="/olopsclogo.png" alt="OLOPSC Logo" className="h-12 w-auto" />
+              <Image src="/olopsclogo.png" alt="OLOPSC Logo" width={220} height={220} className="h-12 w-auto" />
               <div className="leading-tight">
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
