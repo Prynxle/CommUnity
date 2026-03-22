@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
           beamWidth={3}
           beamHeight={50}
           beamNumber={30}
-          lightColor="#ffffff"
+          lightColor="#7070FA"
           speed={2}
           noiseIntensity={1.75}
           scale={0.2}

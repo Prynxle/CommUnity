@@ -316,13 +316,13 @@ export default function SubmitReportSection() {
                   />
                 </div>
 
-                {/* Your name */}
+                {/* Your name (optional for anonymity) */}
                 <InputField
                   name="first_name"
-                  label="Your name"
-                  required
+                  label="Your name (optional)"
+                  required={false}
                   labelClass={smallLabel}
-                  placeholder="e.g., Juan Dela Cruz"
+                  placeholder="Leave blank to remain anonymous"
                   inputClass={[formText, formPlaceholder].join(" ")}
                 />
 

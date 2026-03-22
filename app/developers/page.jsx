@@ -1,81 +1,46 @@
 "use client";
 
-import Header from "../../components/landing/Header.jsx";
-import Footer from "../../components/landing/Footer.jsx";
-import Image from "next/image";
+import Header from "../../components/home/Header";
+import Footer from "../../components/home/Footer";
+import CircularGallery from "../../components/devUI/CircularGallery";
+
+const developerItems = [
+  { image: "/olopsc.jpg", text: "Anne Trixie Urbano" },
+  { image: "/MarHeights.jpg", text: "Zedrick Espiritu" },
+  { image: "/typing.jpg", text: "June Jelo Alcantara" },
+  { image: "/marikinabg.png", text: "Lindell Constantino" },
+  { image: "/cards/student.jpg", text: "CommUnity" },
+  { image: "/cards/reportwriting.jpg", text: "Developer Team" },
+];
 
 export default function DevelopersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black to-orange-900 text-white flex flex-col">
-
-      {/* Navbar only */}
-      <Header hideHero={true} />
-
-      {/* PAGE CONTENT */}
-      <main className="flex-1 px-6 sm:px-12 md:px-20 py-24 mt-32">
-        <h1 className="text-5xl font-bold text-center mb-16">Developers</h1>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 text-center">
-
-          {/* Developer 1 */}
-          <div className="flex flex-col items-center">
-            <Image
-              src="/dev.png"   // replace this with your actual icon
-              alt="Developer Icon"
-              width={150}
-              height={150}
-              className="mb-6 opacity-90"
-            />
-            <h2 className="text-xl font-bold tracking-wide">
-              ANNE TRIXIE <br /> URBANO
-            </h2>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#3b1f88,_#130728_55%,_#06030e)] text-white flex flex-col">
+      <Header />
+      <main className="flex-1 px-6 pt-20 pb-12 sm:px-10 lg:px-16">
+        <section className="mx-auto flex max-w-6xl flex-col gap-8 py-10">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#FFEB00]">Developer Team</p>
+            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">CommUnity builders, presented in the gallery view.</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
+              This page uses the `CircularGallery` component from the `devUI` folder as the main developer showcase.
+            </p>
           </div>
 
-          {/* Developer 2 */}
-          <div className="flex flex-col items-center">
-            <Image
-              src="/dev.png"
-              alt="Developer Icon"
-              width={150}
-              height={150}
-              className="mb-6 opacity-90"
-            />
-            <h2 className="text-xl font-bold tracking-wide">
-              ZEDRICK <br /> ESPIRITU
-            </h2>
+          <div className="rounded-[32px] border border-white/10 bg-white/5 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-6">
+            <div className="h-[540px] overflow-hidden rounded-[24px] bg-black/20">
+              <CircularGallery
+                items={developerItems}
+                bend={2}
+                textColor="#F8FAFC"
+                borderRadius={0.06}
+                scrollSpeed={2.2}
+                scrollEase={0.08}
+              />
+            </div>
           </div>
-
-          {/* Developer 3 */}
-          <div className="flex flex-col items-center">
-            <Image
-              src="/dev.png"
-              alt="Developer Icon"
-              width={150}
-              height={150}
-              className="mb-6 opacity-90"
-            />
-            <h2 className="text-xl font-bold tracking-wide">
-              JUNE JELO <br /> ALCANTARA
-            </h2>
-          </div>
-
-          {/* Developer 4 */}
-          <div className="flex flex-col items-center">
-            <Image
-              src="/dev.png"
-              alt="Developer Icon"
-              width={150}
-              height={150}
-              className="mb-6 opacity-90"
-            />
-            <h2 className="text-xl font-bold tracking-wide">
-              LINDELL <br /> CONSTANTINO
-            </h2>
-          </div>
-
-        </div>
+        </section>
       </main>
-
       <Footer />
     </div>
   );

@@ -23,7 +23,7 @@ export default function EmailRedirectPage() {
         <div className="flex flex-col items-center gap-2">
           <div className="relative flex flex-col items-center text-center -mt-10">
             {/* Logo - removed link to prevent accidental navigation */}
-            <img
+            <image
               src="/LOGO1.png"
               width={300}
               height={300}

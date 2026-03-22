@@ -1,28 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 import Beams from "../../components/backgrounds/Beams";
 
+const supabase =
+  typeof window !== "undefined"
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      )
+    : null;
+
 export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams?.get("token");
-  const email = searchParams?.get("email");
-  // `type` is available in query but not required for reset flow
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    if (!token || !email) {
-      setStatus("error");
-      setMessage("Missing password reset token. Please request a new link.");
-    }
-  }, [token, email]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,19 +30,19 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    if (!supabase) {
+      setStatus("error");
+      setMessage("Unable to connect to auth service. Please try again.");
+      return;
+    }
+
     setStatus("submitting");
     setMessage("");
 
     try {
-      const res = await fetch("/api/auth/reset-password/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data?.error || "Unable to reset your password.");
-      }
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw new Error(error.message);
+
       setStatus("success");
       setMessage("Password reset successfully. Redirecting to login…");
       setTimeout(() => router.push("/"), 2000);
@@ -61,7 +59,7 @@ export default function ResetPasswordPage() {
           beamWidth={3}
           beamHeight={50}
           beamNumber={50}
-          lightColor="#ffffff"
+          lightColor="#7070FA"
           speed={2}
           noiseIntensity={1.75}
           scale={0.2}
@@ -108,7 +106,7 @@ export default function ResetPasswordPage() {
 
             <button
               type="submit"
-              disabled={status === "submitting" || !token || !email}
+              disabled={status === "submitting" || !password || !confirm}
               className="w-full rounded-lg bg-white py-3 font-semibold text-slate-900 hover:bg-white/90 transition disabled:cursor-not-allowed disabled:opacity-70"
             >
               {status === "submitting" ? "Saving…" : "Reset password"}

@@ -440,7 +440,7 @@ export default function AdminDashboardPage() {
                 <FiX className="h-6 w-6" />
               </button>
               <div className="flex-1 overflow-auto rounded-xl bg-white flex items-center justify-center">
-                <img
+                <image
                   src={photoModal.photoUrl}
                   alt="Report photo"
                   className="max-w-full max-h-full object-contain"

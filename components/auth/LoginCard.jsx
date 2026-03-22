@@ -6,6 +6,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { saveUserProfile } from '../../lib/userStorage'
+import { createClient } from '@supabase/supabase-js'
 
 export default function LoginCard({ containerless = false }) {
   const [email, setEmail] = useState('')
@@ -22,6 +23,38 @@ export default function LoginCard({ containerless = false }) {
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
+  }
+
+  const supabase =
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      : null
+
+  async function handleGoogleSignIn() {
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    if (!supabase) {
+      setErrorMessage('Supabase is not configured. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const redirectTo = `${window.location.origin}/auth/callback`
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      })
+
+      if (error) throw new Error(error.message)
+      // On success, Supabase redirects the browser automatically.
+    } catch (err) {
+      setErrorMessage(err.message || 'Unable to sign in with Google.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const Inner = (
@@ -211,7 +244,12 @@ export default function LoginCard({ containerless = false }) {
       </div>
 
       {/* Google button */}
-      <button type="button" className="w-full rounded-lg bg-white/95 py-3 text-slate-900 hover:bg-white inline-flex items-center justify-center gap-3 shadow-sm transition">
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        disabled={isLoading}
+        className="w-full rounded-lg bg-white/95 py-3 text-slate-900 hover:bg-white inline-flex items-center justify-center gap-3 shadow-sm transition disabled:cursor-not-allowed disabled:opacity-70"
+      >
         <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.28,6.053,28.884,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" /><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,16.108,18.961,13,24,13c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C33.28,6.053,28.884,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" /><path fill="#4CAF50" d="M24,44c4.798,0,9.18-1.842,12.483-4.837l-5.769-4.869C28.661,35.523,26.422,36,24,36c-5.202,0-9.619-3.317-11.281-7.953l-6.49,5.004C9.551,39.556,16.227,44,24,44z" /><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.793,2.239-2.231,4.166-4.114,5.572c0,0,0.002-0.001,0.003-0.002l6.492,5.006C35.649,40.648,44,36,44,24C44,22.659,43.862,21.35,43.611,20.083z" /></svg>
         <span className="font-medium">Sign In with Google</span>
       </button>

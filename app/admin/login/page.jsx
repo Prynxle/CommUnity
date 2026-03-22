@@ -64,11 +64,11 @@ export default function AdminLoginPage() {
           beamWidth={3}
           beamHeight={50}
           beamNumber={30}
-          lightColor="#ffffff"
+          lightColor="#7070FA"
           speed={2}
           noiseIntensity={1.75}
           scale={0.2}
-          rotation={0}
+          rotation={1}
         />
       </div>
 
@@ -82,9 +82,9 @@ export default function AdminLoginPage() {
 
         <div className="mb-6 flex flex-col items-center text-center">
           <Image
-            src="/LOGO1.png"
-            width={120}
-            height={120}
+            src="/olopsclogo.png"
+            width={220}
+            height={220}
             alt="CommUnity"
             className="drop-shadow h-16 w-16 sm:h-20 sm:w-20 md:h-[120px] md:w-[120px] object-contain"
           />
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
             Admin Portal
           </h1>
           <p className="mt-2 text-sm sm:text-base text-white/80">
-            Sign in to manage incident reports
+            Welcome to your Admin Portal. Please choose your department and Login.
           </p>
         </div>
 
@@ -165,7 +165,7 @@ export default function AdminLoginPage() {
           </form>
 
           <p className="mt-4 text-center text-sm text-white/70">
-            Student? <Link href="/login" className="underline hover:text-white">Student login</Link>
+            Are you a College Student? If yes, <Link href="/login" className="underline hover:text-white">Click Here.</Link>
           </p>
         </div>
       </div>

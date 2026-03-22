@@ -13,6 +13,8 @@ const ALLOWED_STATUSES = Object.values(REPORT_STATUS)
  */
 export async function PATCH(request, { params }) {
   try {
+    const { reportId } = await params
+
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
     const admin = await getAdminFromToken(token)
@@ -20,7 +22,6 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized. Admin login required.' }, { status: 401 })
     }
 
-    const reportId = params?.reportId
     if (!reportId) {
       return NextResponse.json({ error: 'Report ID required' }, { status: 400 })
     }
