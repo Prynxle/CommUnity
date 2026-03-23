@@ -5,13 +5,27 @@ import Footer from "../../components/home/Footer";
 import CircularGallery from "../../components/devUI/CircularGallery";
 
 const developerItems = [
-  { image: "/olopsc.jpg", text: "Anne Trixie Urbano" },
-  { image: "/MarHeights.jpg", text: "Zedrick Espiritu" },
+  { image: "/xie.jpg", text: "Anne Trixie Urbano", link: "https://music.youtube.com/watch?v=-ZmIN2iP9C0&list=RDAMVM7_o3L4btsyw" },
+  { image: "/zedrick.jpg", text: "Zedrick Espiritu" },
   { image: "/typing.jpg", text: "June Jelo Alcantara" },
-  { image: "/marikinabg.png", text: "Lindell Constantino" },
-  { image: "/cards/student.jpg", text: "CommUnity" },
-  { image: "/cards/reportwriting.jpg", text: "Developer Team" },
+  { image: "/lindell.jpg", text: "Lindell Constantino", },
 ];
+
+
+{developerItems.map((dev, index) => (
+  <a 
+    key={index} 
+    href={dev.link} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    className="block mb-4"
+  >
+    <div className="flex items-center gap-3">
+      <img src={dev.image} alt={dev.text} className="w-12 h-12 rounded-full" />
+      <p>{dev.text}</p>
+    </div>
+  </a>
+))}
 
 export default function DevelopersPage() {
   return (
@@ -20,10 +34,18 @@ export default function DevelopersPage() {
       <main className="flex-1 px-6 pt-20 pb-12 sm:px-10 lg:px-16">
         <section className="mx-auto flex max-w-6xl flex-col gap-8 py-10">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#FFEB00]">Developer Team</p>
-            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">CommUnity builders, presented in the gallery view.</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#FFEB00]">Development and Research Team</p>
+            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">CommUnity</h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-              This page uses the `CircularGallery` component from the `devUI` folder as the main developer showcase.
+          We’re the team behind the CommUnity thesis project, working together across development and research to turn our shared vision into something real.
+           Each of us brings our own strengths and perspectives, collaborating closely to build and refine the platform. <br /> <br />
+
+           • Anne Trixie Urbano — Research & Front-End Development <br />
+           • Zedrick Espiritu — Research & Full Stack Development <br />
+           • June Jelo Alcantara — Research <br />
+           • Lindell Constantino — Research <br /><br />
+
+          Together, we combine our skills and ideas to create something meaningful for the community.
             </p>
           </div>
 
@@ -31,7 +53,7 @@ export default function DevelopersPage() {
             <div className="h-[540px] overflow-hidden rounded-[24px] bg-black/20">
               <CircularGallery
                 items={developerItems}
-                bend={2}
+                bend={1}
                 textColor="#F8FAFC"
                 borderRadius={0.06}
                 scrollSpeed={2.2}
