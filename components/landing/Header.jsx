@@ -61,7 +61,7 @@ export default function Header({ hideHero = false }) {
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
                 >
-                  OLOPSC<span className="text-[#FFEB00]">-COMMUNITY</span>
+                  Comm-<span className="text-[#FFEB00]">Unity</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
                    Incident Reporting System
@@ -183,7 +183,7 @@ export default function Header({ hideHero = false }) {
                   <span className="text-[#FFEB00]">voice.</span>
                   <br />
                   Strengthening every{" "}
-                  <span className="text-[#FFEB00]">standard.</span>
+                  <span className="text-[#FFEB00]">future.</span>
                 </h1>
 
                 <p className="mt-4 sm:mt-6 mx-auto max-w-[34rem] text-[15px] sm:text-[18px] leading-7 sm:leading-8 text-white/90">
