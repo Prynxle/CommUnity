@@ -40,7 +40,7 @@ export default function Header() {
     { label: "Home", href: getSectionHref("#home"), hash: "#home" },
     { label: "Track", href: getSectionHref("#track"), hash: "#track" },
     { label: "Dashboard", href: getSectionHref("#dashboard"), hash: "#dashboard" },
-    { label: "Developer Team", href: "/developers" },
+    { label: "Meet The Team", href: "/developers" },
   ];
 
   useEffect(() => {
@@ -100,10 +100,10 @@ export default function Header() {
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
                 >
-                  OLOPSC<span className="text-[#FFEB00]">-COMMUNITY</span>
+                  COMM<span className="text-[#FFEB00]">-UNITY</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
-                  Student Concern & Incident Reporting
+                  Incident Reporting System
                 </div>
               </div>
             </Link>
@@ -152,9 +152,11 @@ export default function Header() {
                   className={[
                     "group relative overflow-hidden rounded-2xl border border-white/15 h-10 px-5 inline-flex items-center justify-center",
                     "text-[14px] leading-none font-semibold transition-all duration-300",
-                    "bg-white text-[#1a138f] hover:-translate-y-1",
-                    "shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:shadow-[0_22px_60px_rgba(0,0,0,0.24)]",
+                    "bg-gradient-to-b from-[#FF4B4B] to-[#C11C1C]",
+                    "bg-white text-[#FFFFFF] hover:-translate-y-1",
+                    "shadow-[0_18px_40px_rgba(0,0,0,0)] hover:shadow-[0_22px_55px_rgba(193,28,28,0.30)]",
                   ].join(" ")}
+
                 >
                   <span className="relative z-10">Emergency</span>
                 </Link>

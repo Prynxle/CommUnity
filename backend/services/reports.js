@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import sgMail from '@sendgrid/mail'
 import {
   processReportSubmission,
   isValidTransition,
@@ -13,6 +14,11 @@ const SUPABASE_ANON_KEY =
 
 const key = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY
 let _supabase = null
+
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
+
 function getSupabase() {
   // Important: do NOT throw at module import time. This file can be imported during builds.
   if (!SUPABASE_URL || !key) {
@@ -135,7 +141,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null, no
     throw err
   }
 
-  // Placeholder: trigger email notification (implement with your email provider)
+  // Email only on finalization (Resolved/Closed). Submission receipt is sent elsewhere.
   triggerEmailNotification(reportId, newStatus).catch((e) =>
     console.warn('[reports service] Email notification failed:', e?.message)
   )
@@ -144,11 +150,38 @@ export async function updateReportStatus(reportId, newStatus, adminId = null, no
 }
 
 /**
- * Placeholder for Phase 5 email. Replace with your email provider (Resend, SendGrid, etc.).
+ * Send status email only on final states to avoid spamming.
  */
 async function triggerEmailNotification(_reportId, _newStatus) {
   if (process.env.SKIP_REPORT_EMAIL === 'true') return
-  // TODO: e.g. await sendEmail({ to: report.email, template: 'status-update', reportId, newStatus })
+
+  const finalStatuses = [REPORT_STATUS.RESOLVED, REPORT_STATUS.CLOSED]
+  if (!finalStatuses.includes(_newStatus)) return
+
+  const apiKey = process.env.SENDGRID_API_KEY
+  const from = process.env.SENDGRID_FROM
+  if (!apiKey || !from) return
+
+  const report = await getReportById(_reportId)
+  const to = report?.email || null
+  if (!to) return
+
+  const subject =
+    _newStatus === REPORT_STATUS.RESOLVED
+      ? `Your CommUnity report has been resolved (ID: ${_reportId})`
+      : `Your CommUnity report has been closed (ID: ${_reportId})`
+
+  await sgMail.send({
+    to,
+    from,
+    subject,
+    text: `Status update for your CommUnity report.
+
+Report ID: ${_reportId}
+New status: ${_newStatus}
+
+Thank you for helping us keep the community safe.`,
+  })
 }
 
 /**

@@ -26,19 +26,13 @@ export default function HeroSection() {
               <br />
               Strengthening every{" "}
               <span className="text-[#FFEB00] drop-shadow-[0_10px_30px_rgba(255,235,0,.18)]">
-                standard.
+                future.
               </span>
             </h1>
 
             <p className="mt-4 sm:mt-5 max-w-2xl text-[15px] sm:text-[18px] lg:text-[22px] leading-relaxed text-white/90">
-              <span className="text-white font-semibold">Welcome to the OLOPSC-Community!</span>{" "}
-              A school-ready system for reporting incidents, welfare concerns, and campus issues — with
-              responsible routing and{" "}
-              <span className="relative text-white font-semibold">
-                clear updates
-                <span className="absolute left-0 right-0 -bottom-1 h-[10px] rounded-full bg-[#FFEB00]/35 -z-10" />
-              </span>
-              .
+              <span className="text-white font-semibold">Welcome to the Comm-Unity!</span>{" "}
+              A school-based system for reporting incidents; student welfare concerns, and medical-related incident, with structured routing and clear status updates
             </p>
           </div>
 

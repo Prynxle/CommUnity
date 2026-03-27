@@ -17,6 +17,18 @@ export default function CommUpdatesSection() {
   const updates = useMemo(
     () => [
       {
+        title: "College Notice",
+        text: (
+          <>
+            No Announcement.{" "}
+            <span className="font-semibold text-[#1a138f]"></span>
+            {/* <span className="font-semibold text-[#1a138f]">2nd Floor</span>, 3:00–5:00 PM today. */}
+          </>
+        ),
+        tag: "College",
+        meta: "Scheduled today • 3:00 PM",
+      },
+      {
         title: "Guidance Office Announcement",
         text: "No Announcemenet.",
         tag: "Guidance",
@@ -27,18 +39,6 @@ export default function CommUpdatesSection() {
         text: "Please bring your school ID at all times.",
         tag: "Safety",
         meta: "Updated today • 8:30 AM",
-      },
-      {
-        title: "Facilities Notice",
-        text: (
-          <>
-            No Announcement.{" "}
-            <span className="font-semibold text-[#1a138f]"></span>
-            {/* <span className="font-semibold text-[#1a138f]">2nd Floor</span>, 3:00–5:00 PM today. */}
-          </>
-        ),
-        tag: "Facilities",
-        meta: "Scheduled today • 3:00 PM",
       },
     ],
     []

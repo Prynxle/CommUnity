@@ -7,22 +7,22 @@ const faqs = [
   {
     question: "How do I track my report?",
     answer:
-      "After submitting, you’ll receive a reference code. If you’re signed in, you can view a timeline in your dashboard. If anonymous reporting is enabled, you can track using the reference code and your chosen verification details.",
+      "After submitting, you’ll receive a reference code (Report ID). Use that Report ID to view your report’s status and timeline updates in the tracking page.",
   },
   {
     question: "What concerns can I report?",
     answer:
-      "Examples include bullying/harassment, safety hazards, facility issues, classroom concerns, lost items, and student welfare concerns. The school can customize categories based on policy.",
+      "You can report campus concerns such as medical-related icidents and student welfare concerns. Choose the Category of your report -> Location or then Sub-location -> Describe what happened -> Your name (optional) -> Contact Email   --> Photo (Optional) -> Submit. And you are done! you can copy your report ID for reference."
   },
   {
-    question: "Is my report confidential?",
+    question: "Do I need an account to submit a report?",
     answer:
-      "Reports are visible only to authorized school roles. Some concerns may require follow-up—so anonymity depends on the school’s rules and the seriousness of the incident.",
+      "Yes. You can't submit a report without creating an account.",
   },
   {
     question: "Can the school respond immediately?",
     answer:
-      "Response time depends on the category and urgency. For emergencies or immediate danger, contact campus security or emergency services first, then submit a report for documentation and follow-up.",
+      "Response time depends on the urgency and category. For immediate danger or life-threatening emergencies, call the emergency hotline first—then submit a report so it can be documented and followed up by the appropriate office.",
   },
 ];
 

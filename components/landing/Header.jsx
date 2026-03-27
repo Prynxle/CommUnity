@@ -61,7 +61,7 @@ export default function Header({ hideHero = false }) {
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
                 >
-                  Comm-<span className="text-[#FFEB00]">Unity</span>
+                  COMM-<span className="text-[#FFEB00]">UNITY</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
                    Incident Reporting System
