@@ -12,11 +12,11 @@ export default function HowItWorks() {
         popover: (
           <div className="space-y-2">
             <div className="font-semibold text-slate-900">How to submit:</div>
-            <ul className="list-disc pl-5 space-y-1 text-slate-600">
-              <li>Choose a category (bullying, facilities, peer conflict, etc.).</li>
-              <li>Add what happened, where, when, and who was involved (if known).</li>
-              <li>Attach evidence if available (photo, screenshot, note).</li>
-              <li>Review details and submit securely.</li>
+            <ul className="list-disc pl-5 space-y-1 text-[13px] leading-5 text-slate-600">
+              <li>Select a category. Choose a location (and sub-location if needed)</li>
+              <li>Describe what happened (who/where/when).</li>
+              <li>Add your name (optional) and email.</li>
+              <li>Attach a photo if available then submit.</li>
             </ul>
           </div>
         ),
@@ -27,8 +27,7 @@ export default function HowItWorks() {
         popover: (
           <div className="text-slate-600 leading-relaxed">
             After you submit, the report is marked as{" "}
-            <span className="text-slate-900 font-medium">Received</span>. You’ll get a confirmation in
-            the system once staff has logged your report for review.
+            <span className="text-slate-900 font-medium">Submitted</span>. You’ll get report ID as your future reference of your report.
           </div>
         ),
       },
@@ -37,9 +36,10 @@ export default function HowItWorks() {
         Icon: TrackIcon,
         popover: (
           <div className="text-slate-600 leading-relaxed">
-            Track updates like <span className="text-slate-900 font-medium">Received</span>,{" "}
-            <span className="text-slate-900 font-medium">Under Review</span>, and{" "}
-            <span className="text-slate-900 font-medium">Resolved</span>. This helps reduce repeated
+            Track updates like <span className="text-slate-900 font-medium">Submitted</span>,{" "}
+            <span className="text-slate-900 font-medium">In Progress</span>,{" "}
+            <span className="text-slate-900 font-medium">Resolved</span>, and{" "}
+            <span className="text-slate-900 font-medium">Closed</span>. This helps reduce repeated
             follow-ups and keeps everything transparent.
           </div>
         ),

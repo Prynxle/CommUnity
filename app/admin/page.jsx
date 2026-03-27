@@ -41,12 +41,15 @@ const STATUS_STYLES = {
 };
 
 const HOTLINES = [
-  { office: "Campus Clinic / Nurse", desc: "First aid & medical", num1: "0942-0055", tel: "09420055" },
-  { office: "Campus Security", desc: "On-site safety", num1: "0949-673-3019", tel: "09496733019" },
+  { office: "Garcia General Hospital", desc: "Emergency & general healthcare", num1: "8941-5511", tel: "8941-5511" },
+  { office: "ST. Vincent General Hospital", desc: "Emergency & general healthcare", num1: "8948-0314", tel: "8948-0314" },
+  { office: "Marikina Valley Medical Center", desc: "Specialized care & advanced services", num1: "8682-2222", tel: "8682-2222" },
+  { office: "SDS Medical Center", desc: "Specialized care & advanced services", num1: "", tel: "8682-8888" },
   { office: "Guidance Office", desc: "Counseling", num1: "0948-0979", tel: "09480979" },
-  { office: "Discipline Office", desc: "Follow-ups", num1: "0942-3618", tel: "09423618" },
-  { office: "Admin Office", desc: "Coordination", num1: "0682-9572", tel: "06829572" },
-  { office: "Emergency (161)", desc: "Life-threatening", num1: "161", tel: "161" },
+  { office: "PNP Marikina", desc: "1st Line", num1: "0927-968-4311", tel: "0927-968-4311" },
+  { office: "PNP Marikina Other Line", desc: "2nd Line", num1: "0998-598-7876", tel: "0998-598-7876" },
+  { office: "Bureau of Fire Protection", desc: "Main Line", num1: "117", tel: "117" },
+  { office: "City Emergency Hotline", desc: "Life-threatening", num1: "161", tel: "161" },
 ];
 
 export default function AdminDashboardPage() {
@@ -231,13 +234,6 @@ export default function AdminDashboardPage() {
                   Campus hotlines for urgent assistance
                 </div>
               </div>
-              <a
-                href="tel:09496733019"
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/15 px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-white/25 sm:mt-0 sm:w-auto"
-              >
-                <FiPhone className="h-4 w-4" />
-                Campus Security
-              </a>
             </div>
           </div>
           <div className="grid gap-2 p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
@@ -266,9 +262,9 @@ export default function AdminDashboardPage() {
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
             <div className="absolute inset-0 z-0 bg-black/10" />
             <div className="relative z-10">
-              <div className={`${georama.className} text-[18px] sm:text-[20px] font-bold`}>Reports assigned to you</div>
+              <div className={`${georama.className} text-[18px] sm:text-[20px] font-bold`}>Your Reports Database</div>
               <div className={`${inter.className} mt-1 text-[13px] sm:text-[15px] text-white/90`}>
-                Copy Report ID or advance status: Submitted → In progress → Resolved → Closed
+                Advance status: Submitted → In progress → Resolved → Closed
               </div>
             </div>
           </div>
@@ -440,10 +436,12 @@ export default function AdminDashboardPage() {
                 <FiX className="h-6 w-6" />
               </button>
               <div className="flex-1 overflow-auto rounded-xl bg-white flex items-center justify-center">
-                <image
+                <img
                   src={photoModal.photoUrl}
                   alt="Report photo"
                   className="max-w-full max-h-full object-contain"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <button

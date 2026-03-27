@@ -63,14 +63,14 @@ export default function EmergencyResponse() {
               <a
                 href="tel:09496733019"
                 className="group relative mt-6 inline-flex w-full items-center justify-center overflow-hidden
-                           h-12 rounded-full border border-blue-600
-                           bg-gradient-to-b from-[#2F5BFF] to-[#261CC1]
+                           h-12 rounded-full border border-red-600
+                           bg-gradient-to-b from-[#FF4B4B] to-[#C11C1C]
                            px-4 sm:px-6 text-[14px] sm:text-[16px] font-semibold text-white
                            shadow-[0_18px_40px_rgba(38,28,193,0.22)]
                            transition-all duration-300
-                           hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(38,28,193,0.30)]"
+                           hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(193,28,28,0.30)]"
               >
-                CALL 09496733019 NOW
+                CALL 161 NOW
               </a>
 
               <div className="my-6 h-px bg-gray-200" />
@@ -130,8 +130,8 @@ function HotlineCard({ office, desc, num1, num2, tel }) {
       {/* ✅ changed from ombre to SOLID BLUE */}
       <div className="absolute left-0 top-0 h-full w-[6px] bg-[#2F5BFF] rounded-l-2xl" />
 
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
           <p className="text-[16px] font-semibold text-gray-900">{office}</p>
           <p className="mt-1 text-[14px] text-gray-600">{desc}</p>
 
@@ -168,45 +168,51 @@ function HotlineCard({ office, desc, num1, num2, tel }) {
 /* Hotline Data */
 const hotlines = [
   {
-    office: "Campus Clinic / Nurse",
-    desc: "First aid & medical assistance",
-    num1: "0942-0055",
-    num2: "Clinic desk",
-    tel: "09420055",
+    office: "City Emergency Hotline (161)",
+    desc: "For life-threatening situations",
+    num1: "161",
+    num2: "National emergency",
+    tel: "161",
   },
   {
-    office: "Campus Security Office",
+    office: "PNP National Hotline (117)",
+    desc: "Campus operations & coordination",
+    num1: "(02) 8646-0462",
+    num2: "Main line",
+    tel: "(02) 8646-0462",
+  },
+  {
+    office: "New Gen Building",
+    desc: "Admin office & general inquiries",
+    num1: "2605774 & 70009632",
+    num2: "Direct hotline",
+    tel: "2605774",
+  },{
+    office: "CSA Office",
+    desc: "Student affairs & support",
+    num1: "After calling, Enter: 104",
+    num2: "CSA desk",
+    tel: "2605774",
+  },
+  {
+    office: "Guidance Office",
+    desc: "Student support & counseling",
+    num1: "0918-269-1265",
+    num2: "Guidance desk",
+    tel: "09182691265",
+  },
+  {
+    office: "DDRMO Office",
     desc: "On-site safety & response",
     num1: "0949-673-3019",
     num2: "Security desk",
     tel: "09496733019",
   },
   {
-    office: "Guidance Office",
-    desc: "Student support & counseling",
-    num1: "0948-0979",
-    num2: "Guidance desk",
-    tel: "09480979",
-  },
-  {
-    office: "Discipline Office",
-    desc: "Incident follow-ups & mediation",
-    num1: "0942-3618",
-    num2: "Office hotline",
-    tel: "09423618",
-  },
-  {
-    office: "Admin Office",
-    desc: "Campus operations & coordination",
-    num1: "0682-9572",
-    num2: "Main line",
-    tel: "06829572",
-  },
-  {
-    office: "City Emergency Hotline (161)",
-    desc: "For life-threatening situations",
-    num1: "161",
-    num2: "National emergency",
-    tel: "161",
+    office: "Campus Clinic / Nurse",
+    desc: "First aid & medical assistance",
+    num1: "0954-250-722",
+    num2: "Clinic desk",
+    tel: "0954250722",
   },
 ];

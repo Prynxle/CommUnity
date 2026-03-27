@@ -46,8 +46,8 @@ export default function Header({ hideHero = false }) {
           <div
             className="absolute inset-0 bg-[url('/olopscLogo1.jpg')] bg-cover bg-center bg-no-repeat"
             aria-hidden="true" />
-          <div className="absolute inset-0 bg-black/55" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/60" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/35" />
         </div>
       )}
 
@@ -61,7 +61,7 @@ export default function Header({ hideHero = false }) {
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
                 >
-                  Comm-<span className="text-[#FFEB00]">Unity</span>
+                  COMM-<span className="text-[#FFEB00]">UNITY</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
                    Incident Reporting System

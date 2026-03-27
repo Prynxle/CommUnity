@@ -1,66 +1,104 @@
 "use client";
 
+import Image from "next/image";
 import Header from "../../components/home/Header";
 import Footer from "../../components/home/Footer";
-import CircularGallery from "../../components/devUI/CircularGallery";
 
 const developerItems = [
-  { image: "/xie.jpg", text: "Anne Trixie Urbano", link: "https://music.youtube.com/watch?v=-ZmIN2iP9C0&list=RDAMVM7_o3L4btsyw" },
-  { image: "/zedrick.jpg", text: "Zedrick Espiritu" },
-  { image: "/typing.jpg", text: "June Jelo Alcantara" },
-  { image: "/lindell.jpg", text: "Lindell Constantino", },
+  {
+    image: "/xie.jpg",
+    name: "Anne Trixie Urbano",
+    role: "Research & Front-End Development",
+    link: "https://www.facebook.com/xie.xie.182381",
+  },
+  {
+    image: "/zedrick.jpg",
+    name: "Zedrick Espiritu",
+    role: "Researcher & Full Stack Development",
+    link: "https://github.com/Prynxle",
+  },
+  {
+    image: "/jelo.jpg",
+    name: "June Jelo Alcantara",
+    role: "Researcher",
+    link: "https://www.facebook.com/alcantarajelo",
+  },
+  {
+    image: "/lindell.jpg",
+    name: "Lindell Constantino",
+    role: "Researcher",
+    link: "https://www.facebook.com/lindexx.constantino",
+  },
 ];
-
-
-{developerItems.map((dev, index) => (
-  <a 
-    key={index} 
-    href={dev.link} 
-    target="_blank" 
-    rel="noopener noreferrer"
-    className="block mb-4"
-  >
-    <div className="flex items-center gap-3">
-      <img src={dev.image} alt={dev.text} className="w-12 h-12 rounded-full" />
-      <p>{dev.text}</p>
-    </div>
-  </a>
-))}
 
 export default function DevelopersPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#3b1f88,_#130728_55%,_#06030e)] text-white flex flex-col">
       <Header />
-      <main className="flex-1 px-6 pt-20 pb-12 sm:px-10 lg:px-16">
-        <section className="mx-auto flex max-w-6xl flex-col gap-8 py-10">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#FFEB00]">Development and Research Team</p>
-            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">CommUnity</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75 sm:text-base">
-          We’re the team behind the CommUnity thesis project, working together across development and research to turn our shared vision into something real.
-           Each of us brings our own strengths and perspectives, collaborating closely to build and refine the platform. <br /> <br />
-
-           • Anne Trixie Urbano — Research & Front-End Development <br />
-           • Zedrick Espiritu — Research & Full Stack Development <br />
-           • June Jelo Alcantara — Research <br />
-           • Lindell Constantino — Research <br /><br />
-
-          Together, we combine our skills and ideas to create something meaningful for the community.
+      <main className="flex-1 px-4 pb-12 pt-20 sm:px-8 lg:px-14">
+        <section className="mx-auto w-full max-w-7xl py-8 sm:py-12">
+          <div className="rounded-[28px] border border-white/15 bg-white/[0.04] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-8 lg:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#FFEB00] sm:text-sm">
+              Development and Research Team
+            </p>
+            <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+              CommUnity Developers
+            </h1>
+            <p className="mt-4 max-w-4xl text-sm leading-7 text-white/80 sm:text-base">
+              We are the development team behind the CommUnity System, a web-based incident 
+              reporting platform for OLOPS College. Through a collaborative process that integrates research, 
+              user-centered design, and software development, we create and refine the system to provide students and 
+              administrators with a structured, transparent, and accessible tool for reporting, tracking, and managing school-related concerns.
             </p>
           </div>
 
-          <div className="rounded-[32px] border border-white/10 bg-white/5 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-6">
-            <div className="h-[540px] overflow-hidden rounded-[24px] bg-black/20">
-              <CircularGallery
-                items={developerItems}
-                bend={1}
-                textColor="#F8FAFC"
-                borderRadius={0.06}
-                scrollSpeed={2.2}
-                scrollEase={0.08}
-              />
-            </div>
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+            {developerItems.map((dev) => (
+              <article
+                key={dev.name}
+                className="group rounded-3xl border border-white/15 bg-white/[0.05] p-4 shadow-[0_16px_36px_rgba(0,0,0,0.28)] transition hover:-translate-y-1 hover:border-[#FFEB00]/50"
+              >
+                <a
+                  href={dev.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                  aria-label={`Visit ${dev.name} profile`}
+                >
+                  <div className="relative overflow-hidden rounded-2xl">
+                    <Image
+                      src={dev.image}
+                      alt={dev.name}
+                      width={640}
+                      height={640}
+                      className="h-52 w-full object-cover transition duration-300 group-hover:scale-105 sm:h-56 lg:h-60"
+                      sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 25vw"
+                      priority={false}
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
+                  </div>
+                </a>
+
+                <div className="mt-4 space-y-1">
+                  <h2 className="text-lg font-semibold leading-tight text-white">
+                    {dev.name}
+                  </h2>
+                  <p className="text-sm text-white/75">{dev.role}</p>
+                </div>
+
+                <a
+                  href={dev.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center rounded-full border border-white/25 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/90 transition hover:border-[#FFEB00] hover:text-[#FFEB00]"
+                >
+                  View Profile
+                </a>
+              </article>
+            ))}
           </div>
+
+
         </section>
       </main>
       <Footer />
