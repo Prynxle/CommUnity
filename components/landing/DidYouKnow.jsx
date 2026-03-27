@@ -1,93 +1,75 @@
 "use client";
 
-import Image from "next/image";
-import { albertSans, inter, alatsi, georama, abeezee } from "../../lib/fonts";
+import { encodesans, inter } from "../../lib/fonts";
 
 export default function DidYouKnow() {
   return (
-    <>
-      {/* Main Content Section */}
-      <section className="min-h-[900px] md:min-h-[900px] bg-black text-white flex flex-col items-center justify-center px-6 py-16 pt-0">
-        {/* Tagline */}
-        <div className="text-center mb-6 -mt-10">
-          <span className="inline-block bg-[#0F0F0F] text-[#ff8a00] text-sm px-8 py-3 rounded-full tracking-[0.30em]">
-            CONNECT. REPORT. RESOLVE.
+    <section className="relative overflow-hidden py-20 sm:py-24 text-slate-900">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white" />
+        <div className="absolute -left-64 top-14 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[120px]" />
+        <div className="absolute right-[-220px] top-8 h-[520px] w-[520px] rounded-full bg-[#261CC1]/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-32 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#FFEB00]/18 blur-[130px]" />
+      </div>
+
+      <div className="mx-auto max-w-6xl px-5 sm:px-6">
+        <div className="text-center">
+          <span className="inline-flex items-center rounded-full border border-blue-200 bg-white px-5 py-2 text-xs font-semibold tracking-[0.28em] text-[#1a138f] shadow-sm">
+            REPORT • TRACK • RESOLVE
           </span>
+
+          <h2
+            className={`${encodesans.className} mt-5 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900`}
+          >
+            Built for faster campus response
+          </h2>
+
+          <p className={`${inter.className} mx-auto mt-3 max-w-3xl text-sm sm:text-base leading-7 text-slate-600`}>
+            CommUnity helps you submit a concern in minutes and follow its progress using a single
+            reference: your Report ID.
+          </p>
         </div>
 
-        {/* Main Title */}
-        <h1 className={`${albertSans.className} text-2xl sm:text-3xl md:text-4xl text-center mb-3 leading-tight`}>
-          Welcome to Marikina Heights <br />
-          Comm<span className="text-[#ff8a00]">Unity</span> System!
-        </h1>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.22em] text-slate-500">DID YOU KNOW?</p>
+                <h3 className={`${encodesans.className} mt-2 text-xl font-semibold text-slate-900`}>
+                  Your Report ID is your tracker
+                </h3>
+              </div>
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#261CC1]/10 text-[#1a138f] font-bold">
+                ID
+              </span>
+            </div>
 
-        {/* Subtitle */}
-        <p className={`${inter.className} text-gray-300 max-w-2xl text-center mb-12 text-base md:text-lg leading-8 md:leading-9 tracking-wide`}>
-          The CommUnity System provides a convenient platform for residents to <br />
-          report concerns and connect with barangay officials quickly and <br />
-          efficiently.
-        </p>
-
-        {/* Content Section */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-10 max-w-6xl">
-          {/* Text Section */}
-          <div className="md:w-1/2 text-center md:text-left">
-            <h2 className={`${alatsi.className} text-3xl sm:text-4xl md:text-[40px] font-semibold mb-6 -mt-20`}>
-              Marikina Heights
-            </h2>
-            <p className={`${inter.className} text-gray-300 text-base md:text-lg leading-7 md:leading-9`}>
-              Marikina Heights is a residential barangay in <br />
-              Marikina City, Metro Manila, located in the <br />
-              elevated eastern part near the Sierra Madre <br />
-              foothills, known for its schools, subdivisions, <br />
-              and relatively low flood risk.
+            <p className={`${inter.className} mt-3 text-sm leading-7 text-slate-600`}>
+              After submitting, save your Report ID. You can use it to check status updates and the
+              report timeline anytime.
             </p>
           </div>
 
-          {/* Image Section */}
-          <div className="md:w-1/2">
-            <Image
-              src="/MarHeights.jpg"
-              alt="Marikina Heights Barangay Hall"
-              width={600}
-              height={400}
-              className="rounded-2xl shadow-lg"
-            />
+          <div className="rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-[0_18px_55px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.22em] text-slate-500">GOOD PRACTICE</p>
+                <h3 className={`${encodesans.className} mt-2 text-xl font-semibold text-slate-900`}>
+                  Emergencies should be called in
+                </h3>
+              </div>
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFEB00]/40 text-slate-900 font-bold">
+                !
+              </span>
+            </div>
 
+            <p className={`${inter.className} mt-3 text-sm leading-7 text-slate-600`}>
+              For immediate danger, call the emergency hotline first. Then submit a report for
+              documentation and follow-up.
+            </p>
           </div>
         </div>
-      </section>
-
-
-      {/* Did You Know Section */}
-      <section
-        className="bg-cover bg-center py-20 flex items-center justify-center"
-        style={{
-          backgroundImage: 'url("/orange.png")', // Background image
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          minHeight: '380px', // Ensure a minimum height for the section
-        }}
-      >
-        <div className="text-center mt-16">   {/* ⬅️ added mt-8 */}
-          <h3
-            className={`${georama.className} text-[28px] font-bold mb-4 text-white tracking-[0.15em]`}
-          >
-            DID YOU KNOW?
-          </h3>
-
-          <p
-            className={`${abeezee.className} text-[20px] text-gray-200 max-w-3xl mx-auto leading-10 text-center`}
-          >
-            Marikina Heights, formerly Concepcion, is a barangay in the city of Marikina. Its population
-            as determined by the 2020 Census was 42,761. This represented 9.38% of the total
-            population of Marikina. (PhilAtlas, n.d.)
-          </p>
-
-        </div>
-
-
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
