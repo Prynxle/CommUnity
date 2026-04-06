@@ -119,7 +119,7 @@ ${body.description || '-'}
             <tr>
               <td style="padding:20px 24px; background:linear-gradient(135deg,#1C0770,#2F5BFF,#FFEB00); color:#ffffff;">
                 <h1 style="margin:0; font-size:20px; font-weight:700; letter-spacing:0.01em;">
-                  Report submitted successfully
+                  Your Report Progress
                 </h1>
                 <p style="margin:6px 0 0; font-size:13px; opacity:0.9;">
                   Keep this email for your reference.
@@ -135,9 +135,8 @@ ${body.description || '-'}
               </td>
             </tr>
 
-            ${
-              trackUrl
-                ? `
+            ${trackUrl
+              ? `
             <tr>
               <td style="padding:0 24px 8px;">
                 <table role="presentation" cellpadding="0" cellspacing="0">
@@ -156,7 +155,7 @@ ${body.description || '-'}
               </td>
             </tr>
             `
-                : ''
+              : ''
             }
 
             <tr>
@@ -198,9 +197,9 @@ ${body.description || '-'}
                   </div>
                   <div style="font-size:13px; color:#374151; line-height:1.55; white-space:pre-wrap;">
                     ${(body.description || '-')
-                      .replace(/&/g, '&amp;')
-                      .replace(/</g, '&lt;')
-                      .replace(/>/g, '&gt;')}
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')}
                   </div>
                 </div>
               </td>
@@ -237,6 +236,12 @@ ${body.description || '-'}
       success: true,
     })
   } catch (error) {
+    if (error?.code === 'RATE_LIMIT_EXCEEDED') {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 429 }
+      )
+    }
     if (error?.code === 'MISSING_REQUIRED_FIELDS') {
       return NextResponse.json(
         { error: error.detail || 'Submission Failed. Please fill all required fields.' },
