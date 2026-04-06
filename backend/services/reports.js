@@ -56,18 +56,19 @@ function getSupabase() {
 export async function submitReport(userInput) {
   const supabase = getSupabase()
 
-  // Rate limit: max 3 open (non-resolved/closed) reports per email
+  // Rate limit: max 3 reports per day per email
   if (userInput.email) {
     const emailStr = String(userInput.email).trim()
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
     const { count, error: countErr } = await supabase
       .from('reports')
       .select('*', { count: 'exact', head: true })
       .eq('email', emailStr)
-      .in('status', [REPORT_STATUS.SUBMITTED, REPORT_STATUS.IN_PROGRESS])
+      .gte('created_at', twentyFourHoursAgo)
 
     if (!countErr && count >= 3) {
       const err = new Error(
-        'You have reached the maximum limit of 3 open reports. Please wait for your existing reports to be resolved before submitting a new one.'
+        'You have reached the maximum limit of 3 reports per day. Please try again tomorrow.'
       )
       err.code = 'RATE_LIMIT_EXCEEDED'
       throw err
