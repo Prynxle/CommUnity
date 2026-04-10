@@ -4,21 +4,29 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import LogoLoader from "./LogoLoader";
 
-const LoadingGate = ({ children, minDuration = 1500, label = "Loading" }) => {
-  const pathname = usePathname();
+const LoadingGateInner = ({ children, minDuration = 1500, label = "Loading" }) => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    setShowContent(false);
     const timer = setTimeout(() => setShowContent(true), minDuration);
     return () => clearTimeout(timer);
-  }, [pathname, minDuration]);
+  }, [minDuration]);
 
   if (!showContent) {
     return <LogoLoader label={label} />;
   }
 
   return <>{children}</>;
+};
+
+const LoadingGate = ({ children, minDuration = 1500, label = "Loading" }) => {
+  const pathname = usePathname();
+
+  return (
+    <LoadingGateInner key={`${pathname}:${minDuration}`} minDuration={minDuration} label={label}>
+      {children}
+    </LoadingGateInner>
+  );
 };
 
 export default LoadingGate;

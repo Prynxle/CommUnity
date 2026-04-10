@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { FiMenu, FiX } from "react-icons/fi";
 import { georama, poppins } from "../../lib/fonts";
 import { clearUserProfile, getUserProfile, STORAGE_KEY } from "../../lib/userStorage";
@@ -9,12 +11,23 @@ import { clearUserProfile, getUserProfile, STORAGE_KEY } from "../../lib/userSto
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const [profile, setProfile] = useState({ firstName: "", lastName: "", email: "" });
-  const [activeHash, setActiveHash] = useState("");
 
   const menuRef = useRef(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const activeHash = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === "undefined" || pathname !== "/home") return () => {};
+      window.addEventListener("hashchange", onStoreChange);
+      return () => window.removeEventListener("hashchange", onStoreChange);
+    },
+    () => {
+      if (typeof window === "undefined" || pathname !== "/home") return "";
+      return window.location.hash || "#home";
+    },
+    () => ""
+  );
 
   const greetingName =
     profile.firstName?.trim() ||
@@ -22,6 +35,13 @@ export default function Header() {
     (profile.email ? profile.email.split("@")[0] : "User");
 
   const emailLabel = profile.email || "user@example.com";
+  const getSectionHref = (hash) => (pathname === "/home" ? hash : `/home${hash}`);
+  const nav = [
+    { label: "Home", href: getSectionHref("#home"), hash: "#home" },
+    { label: "Track", href: getSectionHref("#track"), hash: "#track" },
+    { label: "Dashboard", href: getSectionHref("#dashboard"), hash: "#dashboard" },
+    { label: "Meet The Team", href: "/developers" },
+  ];
 
   const profileInitial =
     (profile.firstName?.trim()?.[0] ||
@@ -139,7 +159,7 @@ export default function Header() {
                   Student Concern & Incident Reporting
                 </div>
               </div>
-            </a>
+            </Link>
 
             <div className="flex items-center gap-2 sm:gap-5">
               <nav
@@ -182,7 +202,6 @@ export default function Header() {
                   <span className="relative z-10">Create a Report</span>
                 </a>
               </div>
-
               <a
                 href="#hotlines"
                 className={[
@@ -310,8 +329,8 @@ export default function Header() {
                 <div className="mt-3 h-px bg-white/10" />
 
                 <div className="mt-3 flex flex-col gap-2">
-                  <a
-                    href="#submit-report"
+                  <Link
+                    href={getSectionHref("#submit-report")}
                     onClick={() => setMobileOpen(false)}
                     className={[
                       "rounded-xl px-3 py-3 text-center transition",

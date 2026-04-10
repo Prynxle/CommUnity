@@ -134,6 +134,16 @@ export default function SubmitReportSection() {
           <aside className="rounded-2xl border border-gray bg-white p-4 shadow-[0_8px_32px_rgba(38,28,193,0.12)] sm:p-5">
             <div className="text-[18px] font-semibold text-gray-800 sm:text-[20px]">Before you submit</div>
 
+            <p className="mt-2 text-[15px] text-gray-700 sm:text-[16px]">
+              <strong>Student welfare</strong> reports cover items like harassment, bullying, lack of ID, improper uniform, or any concern that affects a student’s wellbeing.
+            </p>
+            <p className="mt-1 text-[15px] text-gray-700 sm:text-[16px]">
+              <strong>Medical-related incidents</strong> include injuries, trauma, illness, or anything that requires health/clinic attention.
+            </p>
+            <p className="mt-1 text-[15px] text-gray-700 sm:text-[16px]">
+              If this is an emergency, call <strong>161</strong> right away and then submit a report when it is safe.
+            </p>
+
             <ul className="mt-3 space-y-2.5 text-[16px] text-gray-700 sm:text-[18px]">
               <li className="flex items-start gap-2.5">
                 <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
@@ -295,10 +305,10 @@ export default function SubmitReportSection() {
 
                 <InputField
                   name="first_name"
-                  label="Your name"
-                  required
+                  label="Your name (optional)"
+                  required={false}
                   labelClass={smallLabel}
-                  placeholder="e.g., Juan Dela Cruz"
+                  placeholder="Leave blank to remain anonymous"
                   inputClass={[formText, formPlaceholder].join(" ")}
                 />
 

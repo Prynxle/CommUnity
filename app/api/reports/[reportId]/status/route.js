@@ -13,6 +13,8 @@ const ALLOWED_STATUSES = Object.values(REPORT_STATUS)
  */
 export async function PATCH(request, { params }) {
   try {
+    const { reportId } = await params
+
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
     const admin = await getAdminFromToken(token)
@@ -20,7 +22,6 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized. Admin login required.' }, { status: 401 })
     }
 
-    const reportId = params?.reportId
     if (!reportId) {
       return NextResponse.json({ error: 'Report ID required' }, { status: 400 })
     }
@@ -28,6 +29,7 @@ export async function PATCH(request, { params }) {
     const body = await request.json().catch(() => ({}))
     const newStatus = (body.status || '').toUpperCase()
     const adminId = body.admin_id ?? admin.role
+    const note = body.note ?? null
 
     if (!ALLOWED_STATUSES.includes(newStatus)) {
       return NextResponse.json(
@@ -36,7 +38,7 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    const result = await updateReportStatus(reportId, newStatus, adminId)
+    const result = await updateReportStatus(reportId, newStatus, adminId, note)
     return NextResponse.json(result)
   } catch (error) {
     if (error?.code === 'INVALID_TRANSITION') {

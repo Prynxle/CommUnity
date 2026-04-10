@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import sgMail from '@sendgrid/mail'
 import {
   processReportSubmission,
   isValidTransition,
@@ -13,6 +14,11 @@ const SUPABASE_ANON_KEY =
 
 const key = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY
 let _supabase = null
+
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+}
+
 function getSupabase() {
   // Important: do NOT throw at module import time. This file can be imported during builds.
   if (!SUPABASE_URL || !key) {
@@ -49,6 +55,26 @@ function getSupabase() {
  */
 export async function submitReport(userInput) {
   const supabase = getSupabase()
+
+  // Rate limit: max 3 reports per day per email
+  if (userInput.email) {
+    const emailStr = String(userInput.email).trim()
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const { count, error: countErr } = await supabase
+      .from('reports')
+      .select('*', { count: 'exact', head: true })
+      .eq('email', emailStr)
+      .gte('created_at', twentyFourHoursAgo)
+
+    if (!countErr && count >= 3) {
+      const err = new Error(
+        'You have reached the maximum limit of 3 reports per day. Please try again tomorrow.'
+      )
+      err.code = 'RATE_LIMIT_EXCEEDED'
+      throw err
+    }
+  }
+
   const { reportID, status, priority, priority_score, assigned_to, sanitizedInput } =
     processReportSubmission(userInput)
 
@@ -87,7 +113,7 @@ export async function submitReport(userInput) {
  * @param {string} newStatus - One of SUBMITTED, IN_PROGRESS, RESOLVED, CLOSED
  * @param {string} [adminId] - Admin who made the change (for timeline)
  */
-export async function updateReportStatus(reportId, newStatus, adminId = null) {
+export async function updateReportStatus(reportId, newStatus, adminId = null, note = null) {
   const supabase = getSupabase()
   const { data: report, error: fetchErr } = await supabase
     .from('reports')
@@ -115,6 +141,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
     previous_status: currentStatus,
     new_status: newStatus,
     admin_id: adminId,
+    note: note ?? null,
   })
 
   if (logErr) {
@@ -134,7 +161,7 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
     throw err
   }
 
-  // Placeholder: trigger email notification (implement with your email provider)
+  // Send status update email for every transition (SUBMITTED receipt is in the API route)
   triggerEmailNotification(reportId, newStatus).catch((e) =>
     console.warn('[reports service] Email notification failed:', e?.message)
   )
@@ -143,11 +170,167 @@ export async function updateReportStatus(reportId, newStatus, adminId = null) {
 }
 
 /**
- * Placeholder for Phase 5 email. Replace with your email provider (Resend, SendGrid, etc.).
+ * Build status-specific email copy.
  */
-async function triggerEmailNotification(reportId, newStatus) {
+function getStatusEmailContent(status) {
+  switch (status) {
+    case REPORT_STATUS.IN_PROGRESS:
+      return {
+        title: 'Your Report is Now In Progress',
+        description:
+          'Our team has begun reviewing and working on your report. We will keep you updated on any further progress.',
+        badgeColor: '#2563eb',
+        badgeLabel: 'In Progress',
+      }
+    case REPORT_STATUS.RESOLVED:
+      return {
+        title: 'Your Report Has Been Resolved',
+        description:
+          'Great news! The issue you reported has been resolved. Thank you for helping make our community safer.',
+        badgeColor: '#16a34a',
+        badgeLabel: 'Resolved',
+      }
+    case REPORT_STATUS.CLOSED:
+      return {
+        title: 'Your Report Has Been Closed',
+        description:
+          'Your report has been closed and all required actions have been finalized. No further updates will be sent.',
+        badgeColor: '#6b7280',
+        badgeLabel: 'Closed',
+      }
+    default:
+      return null
+  }
+}
+
+/**
+ * Build the HTML email template for status updates.
+ */
+function buildStatusEmailHtml({ title, description, badgeColor, badgeLabel, reportId, trackUrl }) {
+  const trackSection = trackUrl
+    ? `
+            <tr>
+              <td style="padding:0 24px 8px;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="background-color:#111827; border-radius:10px;">
+                      <a href="${trackUrl}" style="display:inline-block; padding:10px 14px; font-size:13px; font-weight:700; color:#ffffff; text-decoration:none;">
+                        Track your report
+                      </a>
+                    </td>
+                    <td style="padding-left:10px; font-size:12px; color:#6b7280;">
+                      If the button doesn\u2019t work, copy this link:<br/>
+                      <span style="word-break:break-all; color:#374151;">${trackUrl}</span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>`
+    : ''
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body style="margin:0; padding:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color:#f4f5fb;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#f4f5fb; padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:640px; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(15,23,42,0.12);">
+            <tr>
+              <td style="padding:20px 24px; background:linear-gradient(135deg,#1C0770,#2F5BFF,#FFEB00); color:#ffffff;">
+                <h1 style="margin:0; font-size:20px; font-weight:700; letter-spacing:0.01em;">
+                  ${title}
+                </h1>
+                <p style="margin:6px 0 0; font-size:13px; opacity:0.9;">
+                  Keep this email for your reference.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 24px 4px; font-size:14px; color:#0f172a;">
+                <p style="margin:0 0 8px;">Hi,</p>
+                <p style="margin:0 0 12px; line-height:1.5;">
+                  ${description}
+                </p>
+              </td>
+            </tr>${trackSection}
+            <tr>
+              <td style="padding:0 24px 4px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse; font-size:13px; color:#0f172a;">
+                  <tr>
+                    <td style="padding:8px 0; width:120px; font-weight:600; color:#6b7280;">Report ID</td>
+                    <td style="padding:8px 0; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                      ${reportId}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 0; font-weight:600; color:#6b7280;">New Status</td>
+                    <td style="padding:8px 0;">
+                      <span style="display:inline-block; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:700; color:#ffffff; background-color:${badgeColor};">
+                        ${badgeLabel}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px 20px; font-size:12px; color:#6b7280;">
+                <p style="margin:0 0 4px;">
+                  Keep your <strong>Report ID</strong> safe. You may be asked for it when following up.
+                </p>
+                <p style="margin:0; color:#9ca3af;">
+                  This is an automated notification from the CommUnity reporting system.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+}
+
+/**
+ * Send a styled status-update email for every stage transition.
+ * SUBMITTED receipt is handled separately in the POST route.
+ */
+async function triggerEmailNotification(_reportId, _newStatus) {
   if (process.env.SKIP_REPORT_EMAIL === 'true') return
-  // TODO: e.g. await sendEmail({ to: report.email, template: 'status-update', reportId, newStatus })
+
+  const content = getStatusEmailContent(_newStatus)
+  if (!content) return // Unknown or SUBMITTED status — skip
+
+  const apiKey = process.env.SENDGRID_API_KEY
+  const from = process.env.SENDGRID_FROM
+  if (!apiKey || !from) return
+
+  const report = await getReportById(_reportId)
+  const to = report?.email || null
+  if (!to) return
+
+  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || vercelUrl
+  const trackUrl = baseUrl || null
+
+  const subject = `${content.title} (ID: ${_reportId})`
+
+  await sgMail.send({
+    to,
+    from,
+    subject,
+    text: `Status update for your CommUnity report.\n\nReport ID: ${_reportId}\nNew status: ${_newStatus}\n\nThank you for helping us keep the community safe.`,
+    html: buildStatusEmailHtml({
+      ...content,
+      reportId: _reportId,
+      trackUrl,
+    }),
+  })
 }
 
 /**

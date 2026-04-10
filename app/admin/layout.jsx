@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -10,35 +11,28 @@ import { poppins } from "../../lib/fonts";
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [admin, setAdmin] = useState(null);
-  const [checking, setChecking] = useState(true);
-
   const isLoginPage = pathname === "/admin/login";
+  const session = getAdminSession();
+  const hasSession = Boolean(session?.role && session?.access_token);
+  const admin = isLoginPage || !hasSession ? null : session;
 
   useEffect(() => {
-    const session = getAdminSession();
     if (isLoginPage) {
-      if (session?.role && session?.access_token) {
+      if (hasSession) {
         router.replace("/admin");
-        return;
       }
-      setAdmin(null);
-      setChecking(false);
       return;
     }
-    if (!session?.role || !session?.access_token) {
+    if (!hasSession) {
       router.replace("/admin/login");
-      return;
     }
-    setAdmin(session);
-    setChecking(false);
-  }, [pathname, isLoginPage, router]);
+  }, [hasSession, isLoginPage, router]);
 
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  if (checking) {
+  if (!hasSession) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#1C0770]">
         <div className="text-white/90">Loading…</div>

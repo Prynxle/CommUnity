@@ -22,18 +22,15 @@ export default function EmailRedirectPage() {
       <div className="relative z-10 flex h-full w-full items-center justify-center p-4">
         <div className="flex flex-col items-center gap-2">
           <div className="relative flex flex-col items-center text-center -mt-10">
-            <Link href="/landingpage" aria-label="Go to landing page">
+            {/* Logo - removed link to prevent accidental navigation */}
+            <image
+              src="/LOGO1.png"
+              width={300}
+              height={300}
+              alt="logo"
+              className="drop-shadow"
+            />
 
-              {/* ✅ FIXED LOGO HERE */}
-              <img
-                src="/LOGO1.png"
-                width={300}
-                height={300}
-                alt="logo"
-                className="drop-shadow"
-              />
-
-            </Link>
             <span className="relative -top-2 tracking-[.35em] text-3xl font-bold font-georama mt-[-8px]">
               <span className="text-white">COMM</span>
               <span className="text-orange-500">UNITY</span>

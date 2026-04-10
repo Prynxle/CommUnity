@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { FiMenu, FiX } from "react-icons/fi";
 import { georama } from "../../lib/fonts";
@@ -15,6 +16,7 @@ export default function Header({ hideHero = false }) {
   const nav = useMemo(
     () => [
       { label: "Home", href: homeHref },
+      { label: "About Us", href: "/landingpage/aboutus" },
       { label: "SDG", href: "/landingpage/sdg" }
     ],
     [homeHref]
@@ -42,11 +44,10 @@ export default function Header({ hideHero = false }) {
       {!hideHero && (
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div
-            className="absolute inset-0 bg-[url('/olopsc.jpg')] bg-cover bg-center bg-no-repeat"
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0 bg-black/55" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/60" />
+            className="absolute inset-0 bg-[url('/olopscLogo1.jpg')] bg-cover bg-center bg-no-repeat"
+            aria-hidden="true" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/35" />
         </div>
       )}
 
@@ -55,15 +56,15 @@ export default function Header({ hideHero = false }) {
         <div className="w-full px-5 sm:px-6 lg:px-10">
           <div className="flex h-[74px] items-center justify-between">
             <Link href="/landingpage" className="flex items-center gap-3">
-              <img src="/olopsclogo.png" alt="OLOPSC Logo" className="h-12 w-auto" />
+              <Image src="/olopsclogo.png" alt="OLOPSC Logo" width={220} height={220} className="h-12 w-auto" />
               <div className="leading-tight">
                 <div
                   className={`${georama.className} text-[14px] sm:text-[16px] md:text-[18px] font-extrabold tracking-wide text-white`}
                 >
-                  OLOPSC<span className="text-[#FFEB00]">-COMMUNITY</span>
+                  COMM-<span className="text-[#FFEB00]">UNITY</span>
                 </div>
                 <div className="text-[11px] sm:text-[12px] md:text-[14px] text-white/75">
-                  Student Concern &amp; Incident Reporting
+                   Incident Reporting System
                 </div>
               </div>
             </Link>
@@ -182,7 +183,7 @@ export default function Header({ hideHero = false }) {
                   <span className="text-[#FFEB00]">voice.</span>
                   <br />
                   Strengthening every{" "}
-                  <span className="text-[#FFEB00]">standard.</span>
+                  <span className="text-[#FFEB00]">future.</span>
                 </h1>
 
                 <p className="mt-4 sm:mt-6 mx-auto max-w-[34rem] text-[15px] sm:text-[18px] leading-7 sm:leading-8 text-white/90">

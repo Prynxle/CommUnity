@@ -31,17 +31,22 @@ const SplitText = ({
 }) => {
   const ref = useRef(null)
   const animationCompletedRef = useRef(false)
-  const [fontsLoaded, setFontsLoaded] = useState(false)
+  const [fontsLoaded, setFontsLoaded] = useState(
+    () => typeof document !== 'undefined' && document.fonts?.status === 'loaded'
+  )
 
   useEffect(() => {
-    if (document.fonts.status === 'loaded') {
-      setFontsLoaded(true)
-    } else {
-      document.fonts.ready.then(() => {
-        setFontsLoaded(true)
-      })
+    if (fontsLoaded || typeof document === 'undefined' || !document.fonts) return
+
+    let cancelled = false
+    document.fonts.ready.then(() => {
+      if (!cancelled) setFontsLoaded(true)
+    })
+
+    return () => {
+      cancelled = true
     }
-  }, [])
+  }, [fontsLoaded])
 
   useGSAP(
     () => {

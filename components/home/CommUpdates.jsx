@@ -1,53 +1,130 @@
 // components/home/CommUpdatesSection.jsx
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { publicsans, inter, georama } from "../../lib/fonts";
+
+const supabase =
+  typeof window !== "undefined"
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      )
+    : null;
 
 export default function CommUpdatesSection() {
   const updates = useMemo(
     () => [
       {
+        title: "College Notice",
+        text: (
+          <>
+            No Announcement.{" "}
+            <span className="font-semibold text-[#1a138f]"></span>
+            {/* <span className="font-semibold text-[#1a138f]">2nd Floor</span>, 3:00–5:00 PM today. */}
+          </>
+        ),
+        tag: "College",
+        meta: "Scheduled today • 3:00 PM",
+      },
+      {
         title: "Guidance Office Announcement",
-        text: "Counseling slots are open this week. Book early to secure your preferred time.",
+        text: "No Announcemenet.",
         tag: "Guidance",
         meta: "Updated today • 9:10 AM",
       },
       {
         title: "Campus Safety Advisory",
-        text: "Please bring your school ID at all times. Random checks will be conducted at Gate 2.",
+        text: "Please bring your school ID at all times.",
         tag: "Safety",
         meta: "Updated today • 8:30 AM",
-      },
-      {
-        title: "Facilities Notice",
-        text: (
-          <>
-            Water line maintenance:{" "}
-            <span className="font-semibold text-[#1a138f]">2nd Floor</span>, 3:00–5:00 PM today.
-          </>
-        ),
-        tag: "Facilities",
-        meta: "Scheduled today • 3:00 PM",
       },
     ],
     []
   );
 
-  const stats = useMemo(
-    () => [
-      { label: "Reports filed this month", value: "368", hint: "Total submissions", percent: 78 },
-      { label: "Resolved cases", value: "82%", hint: "Closed successfully", percent: 82 },
-      { label: "Avg. resolution time", value: "4d 6h", hint: "Across all offices", percent: 62 },
-      { label: "Active cases", value: "12", hint: "Under review", percent: 34 },
-    ],
-    []
-  );
+  const [stats, setStats] = useState([
+    { label: "Reports filed this month", value: "—", hint: "Total submissions", percent: 0 },
+    { label: "Resolved cases", value: "—", hint: "Closed successfully", percent: 0 },
+    { label: "Avg. resolution time", value: "—", hint: "Across all offices", percent: 0 },
+    { label: "Active cases", value: "—", hint: "Under review", percent: 0 },
+  ]);
+
+  useEffect(() => {
+    if (!supabase) return;
+
+    async function loadStats() {
+      const { data, error } = await supabase.from("reports").select("status, created_at");
+      if (error || !data) return;
+
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      let totalThisMonth = 0;
+      let resolved = 0;
+      let active = 0;
+
+      data.forEach((r) => {
+        const created = r.created_at ? new Date(r.created_at) : null;
+        if (created && created >= monthStart) totalThisMonth += 1;
+        if (r.status === "RESOLVED") resolved += 1;
+        else active += 1;
+      });
+
+      const resolutionPercent =
+        resolved + active === 0 ? 0 : Math.round((resolved / (resolved + active)) * 100);
+
+      setStats([
+        {
+          label: "Reports filed this month",
+          value: String(totalThisMonth),
+          hint: "Coming Soon",
+          percent: Math.min(100, totalThisMonth || 0),
+        },
+        {
+          label: "Resolved cases",
+          value: `${resolved}`,
+          hint: "Coming Soon",
+          percent: Math.min(100, resolutionPercent),
+        },
+        {
+          label: "Avg. resolution time",
+          value: "—",
+          hint: "Coming soon",
+          percent: 0,
+        },
+        {
+          label: "Active cases",
+          value: `${active}`,
+          hint: "Coming Soon",
+          percent: Math.min(100, active || 0),
+        },
+      ]);
+    }
+
+    loadStats();
+
+    const channel = supabase
+      .channel("reports-dashboard")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "reports" },
+        () => {
+          loadStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const quotes = useMemo(
     () => [
       { text: "My concern was acknowledged quickly and I got updates the next day.", who: "— Student" },
-      { text: "Easy tracking and clear status changes. I felt heard.", who: "— Parent" },
+      { text: "Easy tracking and clear status changes. I felt heard.", who: "— Student" },
       { text: "Anonymous option helped me report safely.", who: "— Student" },
     ],
     []
