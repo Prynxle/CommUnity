@@ -83,9 +83,15 @@ export default function SubmitReportSection() {
     }
 
     const form = e.currentTarget;
-    const formData = new FormData(form);
     const fileInput = form.querySelector('input[name="photo"]');
-    if (fileInput?.files?.[0]) formData.set("photo", fileInput.files[0]);
+    if (!fileInput?.files?.[0]) {
+      setStatus("error");
+      setMessage("Please attach evidence (a photo or screenshot).");
+      return;
+    }
+
+    const formData = new FormData(form);
+    formData.set("photo", fileInput.files[0]);
 
     try {
       const res = await fetch("/api/reports", { method: "POST", body: formData });
@@ -322,7 +328,7 @@ export default function SubmitReportSection() {
                   label="Your name (optional)"
                   required={false}
                   labelClass={smallLabel}
-                  placeholder="Leave blank to remain anonymous"
+                  placeholder="Leave blank if you want to be anonymous"
                   inputClass={[formText, formPlaceholder].join(" ")}
                 />
 
@@ -333,17 +339,20 @@ export default function SubmitReportSection() {
                   required
                   labelClass={smallLabel}
                   type="email"
-                  placeholder="name@school.edu"
+                  placeholder="This is where your Report ID will also be sent."
                   inputClass={[formText, formPlaceholder].join(" ")}
                 />
 
                 {/* Evidence */}
                 <div className="space-y-2">
-                  <label className={smallLabel}>Evidence (optional)</label>
+                  <Label className={smallLabel} required>
+                    Evidence
+                  </Label>
                   <input
                     name="photo"
                     type="file"
                     accept="image/*"
+                    required
                     className={[
                       "block w-full text-[13px] text-gray-700 sm:text-[14px]",
                       "file:mr-3 file:rounded-lg file:border file:border-gray-300",

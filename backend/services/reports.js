@@ -47,9 +47,9 @@ function getSupabase() {
  *   subLocation?: string
  *   subLocationRequired?: boolean
  *   description: string
- *   first_name: string
+ *   first_name?: string | null
  *   email: string
- *   photo_url?: string | null
+ *   photo_url: string (required)
  * }} userInput
  * @returns {Promise<{ report_id: string, id: string }>}
  */
@@ -84,7 +84,8 @@ export async function submitReport(userInput) {
     location_category: sanitizedInput.locationCategory,
     sub_location: sanitizedInput.subLocation || null,
     description: sanitizedInput.description,
-    first_name: sanitizedInput.first_name,
+    // DB column is NOT NULL; blank optional name is stored as a sentinel (not SQL NULL).
+    first_name: sanitizedInput.first_name?.trim() || 'Anonymous',
     email: sanitizedInput.email,
     photo_url: userInput.photo_url ?? null,
     status,

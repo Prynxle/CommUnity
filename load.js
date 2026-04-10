@@ -71,6 +71,7 @@ export default function (data) {
       description: 'Sample report from load test',
       first_name: 'Load',
       email: 'loadtest@example.com',
+      photo_url: 'https://example.com/load-test-evidence.jpg',
     }),
     {
       headers: {
