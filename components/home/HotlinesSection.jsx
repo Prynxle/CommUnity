@@ -124,18 +124,22 @@ function HotlineCard({ office, desc, num1, num2, tel }) {
   return (
     <div
       className="relative rounded-2xl border border-blue-200 bg-white p-4 sm:p-5
-                    shadow-[0_12px_35px_rgba(38,28,193,0.10)]
-                    transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(38,28,193,0.14)]"
+                 shadow-[0_12px_35px_rgba(38,28,193,0.10)]
+                 transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(38,28,193,0.14)]"
     >
-      {/* ✅ changed from ombre to SOLID BLUE */}
-      <div className="absolute left-0 top-0 h-full w-[6px] bg-[#2F5BFF] rounded-l-2xl" />
+      <div className="absolute left-0 top-0 h-full w-[6px] rounded-l-2xl bg-[#2F5BFF]" />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <p className="text-[16px] font-semibold text-gray-900">{office}</p>
-          <p className="mt-1 text-[14px] text-gray-600">{desc}</p>
+        <div className="min-w-0 flex-1 pr-0 sm:pr-3">
+          <p className="text-[16px] font-semibold leading-snug text-gray-900 break-words">
+            {office}
+          </p>
 
-          <p className="mt-2 text-[15px] text-gray-800">
+          <p className="mt-1 text-[14px] leading-relaxed text-gray-600 break-words">
+            {desc}
+          </p>
+
+          <p className="mt-2 text-[15px] leading-relaxed text-gray-800 break-words">
             {num1}
             {num2 && (
               <>
@@ -146,17 +150,12 @@ function HotlineCard({ office, desc, num1, num2, tel }) {
           </p>
         </div>
 
-        {/* FIXED CALL BUTTON */}
         <a
           href={`tel:${tel}`}
-          className="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2
-                     h-10 rounded-full border border-blue-200 bg-white
-                     px-4 text-[14px] font-semibold text-[#1a138f]
-                     shadow-sm transition
-                     hover:bg-[#261CC1]/10 hover:-translate-y-0.5"
+          className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-2 rounded-full border border-blue-200 bg-white px-4 text-[14px] font-semibold text-[#1a138f] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#261CC1]/10 sm:mt-1 sm:w-auto sm:min-w-[112px]"
         >
-          CALL
-          <span className="grid place-items-center h-6 w-6 rounded-full bg-[#261CC1]/10">
+          <span>CALL</span>
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-[#261CC1]/10">
             <FiArrowRight size={14} />
           </span>
         </a>

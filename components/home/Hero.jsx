@@ -9,7 +9,7 @@ export default function HeroSection() {
       className="relative overflow-hidden"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/olopsc.jpg')",
+          "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('/olopsc.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
