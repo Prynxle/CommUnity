@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { FiArrowRight, FiMessageCircle, FiX, FiAlertTriangle } from "react-icons/fi";
+import { FiArrowRight, FiMessageCircle, FiX } from "react-icons/fi";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,21 +11,15 @@ export default function Chatbot() {
   const quickActions = useMemo(
     () => [
       {
-        label: "Emergency: Campus Security",
-        text: "Emergency: I need campus security assistance.",
+        label: "Emergency contacts",
+        text: "Emergency: I need help now. Show emergency contacts.",
         kind: "emergency",
       },
-      {
-        label: "Emergency: Clinic / Nurse",
-        text: "Emergency: I need the clinic/nurse hotline.",
-        kind: "emergency",
-      },
-      { label: "How do I submit a report?", text: "How do I submit a report?", kind: "faq" },
-      { label: "How do I track my report?", text: "How do I track my report?", kind: "faq" },
-      { label: "Can I report anonymously?", text: "Can I report anonymously?", kind: "faq" },
-      { label: "What details should I include?", text: "What details should I include in a report?", kind: "faq" },
-      { label: "Where is the emergency button?", text: "Where is the emergency button?", kind: "faq" },
-      { label: "Who sees my report?", text: "Who can see my report?", kind: "faq" },
+      { label: "Submit a report", text: "How do I submit a report?", kind: "faq" },
+      { label: "Track my report", text: "How do I track my report?", kind: "faq" },
+      { label: "Anonymous reporting", text: "Can I report anonymously?", kind: "faq" },
+      { label: "What details to include", text: "What details should I include in a report?", kind: "faq" },
+      { label: "Who can see my report?", text: "Who can see my report?", kind: "faq" },
     ],
     []
   );
@@ -47,22 +41,23 @@ export default function Chatbot() {
 
     if (t.includes("emergency") || t.includes("security") || t.includes("clinic")) {
       return [
-        { label: "Show full hotline list", text: "Show me the full campus hotline directory." },
-        { label: "How do I submit a report?", text: "How do I submit a report?" },
+        { label: "Show hotlines again", text: "Show emergency contacts." },
+        { label: "How to submit report", text: "How do I submit a report?" },
       ];
     }
 
     if (t.includes("submit") || t.includes("report") && !t.includes("track")) {
       return [
-        { label: "What details should I include?", text: "What details should I include in a report?" },
-        { label: "Can I report anonymously?", text: "Can I report anonymously?" },
+        { label: "Required details", text: "What details should I include in a report?" },
+        { label: "Who can see my report?", text: "Who can see my report?" },
+        { label: "Anonymous reporting", text: "Can I report anonymously?" },
       ];
     }
 
     if (t.includes("track")) {
       return [
-        { label: "How do I submit a report?", text: "How do I submit a report?" },
-        { label: "Emergency contacts", text: "What are the emergency contact numbers?" },
+        { label: "Track by Report ID", text: "Can you check this Report ID: 123e4567-e89b-12d3-a456-426614174000" },
+        { label: "How to submit report", text: "How do I submit a report?" },
       ];
     }
 

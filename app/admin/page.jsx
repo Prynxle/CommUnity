@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminSession } from "../../lib/adminStorage";
 import { poppins, georama, inter } from "../../lib/fonts";
-import { FiCopy, FiArrowRight, FiPhone, FiX, FiImage } from "react-icons/fi";
+import { FiCopy, FiArrowRight, FiPhone, FiX, FiImage, FiBarChart2, FiShield, FiClock, FiCheckCircle } from "react-icons/fi";
 
 const REPORT_STATUS = {
   SUBMITTED: "SUBMITTED",
@@ -64,6 +64,19 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const admin = getAdminSession();
   const token = admin?.access_token;
+
+  const adminLabel =
+    admin?.role === "csa_admin"
+      ? "CSA Admin"
+      : admin?.role === "clinic_admin"
+        ? "Clinic Admin"
+        : "Admin";
+
+  const greetingName = useMemo(() => {
+    const emailName = admin?.email?.split("@")[0]?.replace(/[._-]+/g, " ")?.trim();
+    if (!emailName) return "Admin";
+    return emailName.replace(/\b\w/g, (char) => char.toUpperCase());
+  }, [admin?.email]);
 
   useEffect(() => {
     if (!admin?.access_token) {
@@ -155,33 +168,112 @@ export default function AdminDashboardPage() {
 
   const stats = useMemo(
     () => [
-      { key: "SUBMITTED", label: "Submitted", value: byStatus.SUBMITTED?.length ?? 0, percent: 85 },
-      { key: "IN_PROGRESS", label: "In progress", value: byStatus.IN_PROGRESS?.length ?? 0, percent: 60 },
-      { key: "RESOLVED", label: "Resolved", value: byStatus.RESOLVED?.length ?? 0, percent: 90 },
-      { key: "CLOSED", label: "Closed", value: byStatus.CLOSED?.length ?? 0, percent: 100 },
+      { key: "SUBMITTED", label: "Submitted", value: byStatus.SUBMITTED?.length ?? 0, tone: "from-sky-500 to-blue-700" },
+      { key: "IN_PROGRESS", label: "In progress", value: byStatus.IN_PROGRESS?.length ?? 0, tone: "from-violet-500 to-indigo-700" },
+      { key: "RESOLVED", label: "Resolved", value: byStatus.RESOLVED?.length ?? 0, tone: "from-emerald-500 to-green-700" },
+      { key: "CLOSED", label: "Closed", value: byStatus.CLOSED?.length ?? 0, tone: "from-slate-500 to-slate-700" },
     ],
     [byStatus]
   );
 
+  const totalReports = reports.length;
+  const chartMax = useMemo(() => {
+    const currentMax = Math.max(0, ...stats.map((item) => item.value));
+    return Math.max(300, Math.ceil(currentMax / 50) * 50 || 300);
+  }, [stats]);
+  const yAxisTicks = useMemo(
+    () => Array.from({ length: 5 }, (_, index) => Math.round((chartMax / 4) * (4 - index))),
+    [chartMax]
+  );
+  const submittedCount = byStatus.SUBMITTED?.length ?? 0;
+  const activeCount = (byStatus.SUBMITTED?.length ?? 0) + (byStatus.IN_PROGRESS?.length ?? 0);
+  const resolvedCount = (byStatus.RESOLVED?.length ?? 0) + (byStatus.CLOSED?.length ?? 0);
+
   return (
     <div className="min-h-screen bg-[#F8FAFF]">
-      {/* Background blobs (match home UI) */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -left-44 top-24 h-[400px] w-[400px] rounded-full bg-[#261CC1]/08 blur-[100px]" />
         <div className="absolute right-[-180px] top-[-100px] h-[420px] w-[420px] rounded-full bg-[#261CC1]/08 blur-[110px]" />
         <div className="absolute left-1/2 top-64 h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-[#FFEB00]/[0.08] blur-[120px]" />
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-8 sm:space-y-10">
-        {/* Page title */}
-        <div className="border-b-4 border-[#2F5BFF] pb-4">
-          <h1 className={`${poppins.className} text-[22px] font-bold text-gray-900 sm:text-[28px] lg:text-3xl`}>
-            Admin Dashboard
-          </h1>
-          <p className="mt-1 text-[14px] sm:text-[16px] text-gray-600">
-            Manage reports, view stats, and access emergency contacts.
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <section
+          id="overview"
+          className="relative overflow-hidden rounded-[32px] border border-white/20 shadow-[0_28px_80px_rgba(15,23,42,0.18)]"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, rgba(10,10,35,0.84) 0%, rgba(28,7,112,0.78) 45%, rgba(28,7,112,0.52) 100%), url('/olopscLogo1.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,235,0,0.18),transparent_24%),radial-gradient(circle_at_left_center,rgba(47,91,255,0.22),transparent_26%)]" />
+
+          <div className="relative grid gap-8 px-5 py-8 sm:px-8 sm:py-12 lg:grid-cols-[1.15fr_0.85fr] lg:px-10 lg:py-14">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80 backdrop-blur-xl">
+                {adminLabel} Control Center
+              </div>
+
+              <h1 className={`${poppins.className} mt-5 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-white sm:mt-6 sm:text-[46px] sm:leading-[1.05] lg:text-[62px]`}>
+                Welcome back, <span className="text-[#FFEB00]">{greetingName}</span>.
+                <br />
+                Lead campus response with clarity.
+              </h1>
+
+              <p className="mt-4 max-w-2xl text-[14.5px] leading-7 text-white/90 sm:mt-5 sm:text-[18px] sm:leading-8">
+                This admin workspace is tailored for school response teams, not student reporters. Review incoming concerns, monitor case flow, and keep every follow-up organized from one professional dashboard.
+              </p>
+
+              <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+                <a
+                  href="#reports"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-gradient-to-r from-[#2F5BFF] to-[#261CC1] px-6 py-3 text-[15px] font-semibold text-white transition hover:-translate-y-1"
+                >
+                  Review report queue
+                </a>
+                <a
+                  href="#response"
+                  className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-[15px] font-semibold text-white backdrop-blur-sm transition hover:-translate-y-1"
+                >
+                  View school dashboard
+                </a>
+              </div>
+            </div>
+
+            <div className="relative mx-auto flex w-full max-w-[520px] items-center lg:mx-0">
+              <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[30px] bg-gradient-to-b from-[#261CC1]/20 via-[#261CC1]/10 to-[#FFEB00]/10 blur-xl" />
+              <div className="grid w-full gap-4 rounded-[28px] border border-white/20 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.20)] backdrop-blur-xl sm:p-6">
+                <AdminHeroMetric
+                  icon={<FiBarChart2 className="h-5 w-5" />}
+                  label="Total reports"
+                  value={totalReports}
+                  helper={`${submittedCount} newly submitted`}
+                />
+                <AdminHeroMetric
+                  icon={<FiShield className="h-5 w-5" />}
+                  label="Open cases"
+                  value={activeCount}
+                  helper="Needs ongoing response"
+                />
+                <AdminHeroMetric
+                  icon={<FiCheckCircle className="h-5 w-5" />}
+                  label="Resolved cases"
+                  value={resolvedCount}
+                  helper="Handled by admin teams"
+                />
+                <AdminHeroMetric
+                  icon={<FiClock className="h-5 w-5" />}
+                  label="Admin role"
+                  value={adminLabel}
+                  helper="Secure dashboard access"
+                  isText
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
         {error && (
           <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -189,40 +281,106 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* School Dashboard – Quick stats */}
-        <section className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
+        <section
+          id="response"
+          className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]"
+        >
           <div className="relative overflow-hidden px-4 py-5 text-white sm:px-6 sm:py-6">
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
             <div className="absolute -left-20 top-[-60px] z-0 h-[220px] w-[220px] rounded-full bg-[#2F5BFF]/55 blur-[100px]" />
             <div className="absolute right-[-60px] bottom-[-60px] z-0 h-[220px] w-[220px] rounded-full bg-[#FFEB00]/55 blur-[110px]" />
             <div className="absolute inset-0 z-0 bg-black/10" />
-            <div className="relative z-10">
-              <div className={`${georama.className} text-[18px] sm:text-[20px] font-bold`}>School Dashboard</div>
-              <div className={`${inter.className} mt-1 text-[13px] sm:text-[15px] text-white/90`}>
-                Report counts by status
+            <div className="relative z-10 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div className={`${georama.className} text-[18px] font-bold sm:text-[20px]`}>School Dashboard</div>
+                <div className={`${inter.className} mt-1 text-[13px] text-white/90 sm:text-[15px]`}>
+                  Report counts by status with a higher-capacity chart scale
+                </div>
+              </div>
+              <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+                Chart scale: 0 to {chartMax}
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3 p-4 sm:gap-4 sm:p-6 lg:grid-cols-4">
-            {stats.map((s) => (
-              <div
-                key={s.key}
-                className="rounded-2xl border border-[#D7E0FF] bg-white p-4 shadow-[0_12px_35px_rgba(38,28,193,0.08)]"
-              >
-                <div className="text-[12px] sm:text-[13px] font-semibold text-gray-500">{s.label}</div>
-                <div className="mt-1 text-[24px] sm:text-[28px] font-bold text-[#1C0770]">{s.value}</div>
-                <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div
-                    className="h-full rounded-full bg-[#2F5BFF]"
-                    style={{ width: `${Math.min(100, (s.value || 0) * 5 + 20)}%` }}
-                  />
+          <div className="grid gap-6 p-4 sm:p-6 xl:grid-cols-[0.95fr_1.05fr]">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {stats.map((s) => (
+                <div
+                  key={s.key}
+                  className="rounded-2xl border border-[#D7E0FF] bg-white p-4 shadow-[0_12px_35px_rgba(38,28,193,0.08)]"
+                >
+                  <div className="text-[12px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-[13px]">{s.label}</div>
+                  <div className="mt-2 flex items-end justify-between gap-3">
+                    <div className="text-[24px] font-bold text-[#1C0770] sm:text-[28px]">{s.value}</div>
+                    <div className="text-xs font-medium text-gray-400">
+                      {totalReports ? `${Math.round((s.value / totalReports) * 100)}%` : "0%"}
+                    </div>
+                  </div>
+                  <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className={`h-full rounded-full bg-gradient-to-r ${s.tone}`}
+                      style={{ width: s.value === 0 ? "0%" : `${Math.max(6, (s.value / chartMax) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-[28px] border border-[#D7E0FF] bg-[#F8FAFF] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] sm:p-6">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#1C0770]">Report volume by status</h3>
+                </div>
+                <div className="text-xs uppercase tracking-[0.22em] text-gray-400">Live overview</div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-[36px_minmax(0,1fr)] gap-3 sm:grid-cols-[44px_minmax(0,1fr)]">
+                <div className="flex h-[220px] flex-col justify-between text-[11px] font-medium text-gray-400 sm:h-[260px] sm:text-xs">
+                  {yAxisTicks.map((tick) => (
+                    <span key={tick}>{tick}</span>
+                  ))}
+                </div>
+
+                <div className="relative">
+                  <div className="overflow-x-auto overscroll-x-contain pb-2 [-webkit-overflow-scrolling:touch]">
+                    <div className="relative h-[220px] min-w-[520px] rounded-3xl border border-white bg-white/70 px-4 pb-4 pt-3 shadow-[0_18px_40px_rgba(38,28,193,0.06)] sm:h-[260px] sm:min-w-0">
+                      <div className="pointer-events-none absolute inset-x-4 inset-y-3 grid grid-rows-4">
+                        {yAxisTicks.slice(0, 4).map((tick) => (
+                          <div key={tick} className="border-b border-dashed border-slate-200 last:border-b-0" />
+                        ))}
+                      </div>
+
+                      <div className="relative flex h-full items-end justify-between gap-3">
+                        {stats.map((item) => {
+                          const barHeight = item.value === 0 ? 0 : Math.max(10, (item.value / chartMax) * 100);
+                          return (
+                            <div key={item.key} className="flex flex-1 flex-col items-center justify-end gap-2 sm:gap-3">
+                              <div className="text-sm font-semibold text-[#1C0770]">{item.value}</div>
+                              <div className="flex h-[150px] w-full items-end justify-center sm:h-[185px]">
+                                <div
+                                  className={`w-full max-w-[74px] rounded-t-[22px] bg-gradient-to-t ${item.tone} shadow-[0_14px_30px_rgba(47,91,255,0.22)] transition-all duration-500`}
+                                  style={{ height: `${barHeight}%` }}
+                                />
+                              </div>
+                              <div className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs">
+                                {item.label}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 text-xs text-gray-400 sm:hidden">
+                    Tip: swipe horizontally to view the full chart.
+                  </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
-        {/* Emergency Response */}
         <section className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
           <div className="relative overflow-hidden border-b border-gray-200 px-4 py-5 text-white sm:px-6 sm:py-6">
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
@@ -256,8 +414,10 @@ export default function AdminDashboardPage() {
           </div>
         </section>
 
-        {/* Reports by status */}
-        <section className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]">
+        <section
+          id="reports"
+          className="overflow-hidden rounded-3xl border border-[#D7E0FF] bg-white shadow-[0_18px_55px_rgba(38,28,193,0.10)]"
+        >
           <div className="relative overflow-hidden border-b border-gray-200 px-4 py-5 text-white sm:px-6 sm:py-6">
             <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#1C0770] via-[#2F5BFF] to-[#FFEB00]" />
             <div className="absolute inset-0 z-0 bg-black/10" />
@@ -453,6 +613,23 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function AdminHeroMetric({ icon, label, value, helper, isText = false }) {
+  return (
+    <div className="rounded-2xl border border-[#D7E0FF] bg-white p-4 shadow-[0_12px_30px_rgba(38,28,193,0.08)]">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="text-[12px] font-semibold uppercase tracking-[0.18em] text-gray-500">{label}</div>
+          <div className={`mt-2 text-[#1C0770] ${isText ? "text-[20px] font-semibold sm:text-[24px]" : "text-[28px] font-bold sm:text-[34px]"}`}>
+            {value}
+          </div>
+          <div className="mt-1 text-sm text-gray-500">{helper}</div>
+        </div>
+        <div className="rounded-2xl bg-[#261CC1]/10 p-3 text-[#261CC1]">{icon}</div>
       </div>
     </div>
   );

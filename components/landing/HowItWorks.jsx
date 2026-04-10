@@ -16,7 +16,7 @@ export default function HowItWorks() {
               <li>Select a category. Choose a location (and sub-location if needed)</li>
               <li>Describe what happened (who/where/when).</li>
               <li>Add your name (optional) and email.</li>
-              <li>Attach a photo if available then submit.</li>
+              <li>Attach a photo.</li>
             </ul>
           </div>
         ),
@@ -27,7 +27,7 @@ export default function HowItWorks() {
         popover: (
           <div className="text-slate-600 leading-relaxed">
             After you submit, the report is marked as{" "}
-            <span className="text-slate-900 font-medium">Submitted</span>. You’ll get report ID as your future reference of your report.
+            <span className="text-slate-900 font-medium">Submitted</span>. You’ll get report ID sent to your Email as your future reference of your report.
           </div>
         ),
       },
@@ -49,7 +49,7 @@ export default function HowItWorks() {
         Icon: UpdatesIcon,
         popover: (
           <div className="text-slate-600 leading-relaxed">
-            You’ll receive in-app updates (and email if enabled) whenever the status changes—so you stay
+            You’ll receive email updates whenever the status changes—so you stay
             informed until the concern is resolved.
           </div>
         ),

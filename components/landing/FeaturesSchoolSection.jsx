@@ -10,14 +10,14 @@ export default function DesignedForSchool() {
       {
         title: "Student Concerns",
         desc:
-          "Report bullying, harassment, classroom concerns, peer conflicts, or well-being issues—handled with care.",
+          "Report bullying, harassment, classroom concerns, peer conflicts, or medical-related incident.",
         img: "/cards/student.jpg",
         alt: "Student concerns",
       },
       {
         title: "Chatbot Assistance",
         desc:
-          "Select from pre-empted questions to receive guided assistance and complete your report step by step.",
+          "Select from pre-empted questions to receive guided assistance.",
         img: "/typing.jpg",
         alt: "Chatbot",
       },

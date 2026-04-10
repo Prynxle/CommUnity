@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { generateRAGResponse } from '../../../../backend/services/ragService'
+import { generateAssistantResponse } from '../../../../backend/services/ragService'
 
 /**
  * POST /api/chat/rag
- * Generate RAG response for chatbot using Gemini Flash
+ * Deterministic assistant response (no external AI required).
  */
 export async function POST(request) {
   try {
@@ -16,16 +16,7 @@ export async function POST(request) {
       )
     }
 
-    // Check for API key
-    if (!process.env.GOOGLE_AI_API_KEY) {
-      console.warn('GOOGLE_AI_API_KEY not configured')
-      return NextResponse.json({
-        text: "Chat service is temporarily unavailable. Please try again later.",
-        sources: []
-      })
-    }
-
-    const response = await generateRAGResponse(message.trim())
+    const response = await generateAssistantResponse(message.trim())
 
     return NextResponse.json(response)
 

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { poppins } from "../../lib/fonts";
-import { addMyReportId } from "../../lib/reportIdStorage";
 import { FiCopy } from "react-icons/fi";
 
 export default function SubmitReportSection() {
@@ -104,7 +103,6 @@ export default function SubmitReportSection() {
 
       const reportId = data.report_id ?? null;
       setSubmittedReportId(reportId);
-      if (reportId) addMyReportId(reportId);
       setStatus("success");
       setMessage("Report submitted successfully. Thank you.");
 
@@ -156,19 +154,31 @@ export default function SubmitReportSection() {
             <ul className="mt-3 space-y-2.5 text-[16px] text-gray-700 sm:text-[18px]">
               <li className="flex items-start gap-2.5">
                 <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
+                <span>Choose the Category of your Report.</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
+                <span>Include location (Floor and Sublocation).</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
                 <span>Be specific about what happened and when.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
-                <span>Include location (room, building, area).</span>
+                <span>Leave blank your name if you want to be Anonymous.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
-                <span>Add evidence if available (optional).</span>
+                <span>Enter your Contact Email, This is where you Report ID will be sent. Please check your spam.</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
-                <span>Use “Anonymous” if you prefer (if enabled by school).</span>
+                <span>Add evidence (required).</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <CheckIcon className="mt-[3px] h-4 w-4 shrink-0" />
+                <span>After submission, you will receive your Report ID. And will be sent into your email spam. You can copy that as your reference.</span>
               </li>
             </ul>
 
