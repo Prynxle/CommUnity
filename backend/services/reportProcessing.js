@@ -39,8 +39,8 @@ const REQUIRED_FIELDS = [
   'category',
   'locationCategory',
   'description',
-  'first_name',
   'email',
+  'photo_url',
 ]
 
 /**
@@ -65,7 +65,15 @@ export function missingRequiredFields(userInput) {
  */
 export function sanitize(userInput) {
   const out = {}
-  const maxLen = { description: 5000, first_name: 200, email: 255, category: 200, locationCategory: 200, subLocation: 200 }
+  const maxLen = {
+    description: 5000,
+    first_name: 200,
+    email: 255,
+    category: 200,
+    locationCategory: 200,
+    subLocation: 200,
+    photo_url: 2048,
+  }
   for (const [key, value] of Object.entries(userInput)) {
     if (value === undefined || value === null) {
       out[key] = null

@@ -55,12 +55,27 @@ export async function POST(request) {
         email: formData.get('email')?.toString()?.trim() || '',
       }
       const file = formData.get('photo')
-      if (file && file.size > 0) {
-        try {
-          photoUrl = await uploadReportPhoto(await file.arrayBuffer(), file.name)
-        } catch (uploadErr) {
-          console.warn('[reports API] Photo upload failed:', uploadErr?.message)
-        }
+      const hasFile =
+        file &&
+        typeof file === 'object' &&
+        typeof file.arrayBuffer === 'function' &&
+        file.size > 0
+
+      if (!hasFile) {
+        return NextResponse.json(
+          { error: 'Please attach evidence (a photo or screenshot).' },
+          { status: 400 }
+        )
+      }
+
+      try {
+        photoUrl = await uploadReportPhoto(await file.arrayBuffer(), file.name)
+      } catch (uploadErr) {
+        console.warn('[reports API] Photo upload failed:', uploadErr?.message)
+        return NextResponse.json(
+          { error: 'Evidence upload failed. Please try a different file or try again later.' },
+          { status: 500 }
+        )
       }
     } else {
       body = await request.json()

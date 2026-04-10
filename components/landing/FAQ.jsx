@@ -12,7 +12,7 @@ const faqs = [
   {
     question: "What concerns can I report?",
     answer:
-      "You can report campus concerns such as medical-related icidents and student welfare concerns. Choose the Category of your report -> Location or then Sub-location -> Describe what happened -> Your name (optional) -> Contact Email   --> Photo (Optional) -> Submit. And you are done! you can copy your report ID for reference."
+      "You can report campus concerns such as medical-related icidents and student welfare concerns. Choose the Category of your report -> Location or then Sub-location -> Describe what happened -> Your name (optional) -> Contact Email -> Evidence (required photo) -> Submit. And you are done! you can copy your report ID for reference."
   },
   {
     question: "Do I need an account to submit a report?",
