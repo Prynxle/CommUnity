@@ -2,8 +2,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getMyReportIds, addMyReportId } from "../../lib/reportIdStorage";
-import { FiCopy, FiPlus } from "react-icons/fi";
+import { getUserAccessToken } from "../../lib/userStorage";
+import { FiCopy } from "react-icons/fi";
 
 const STATUS_LABELS = {
   SUBMITTED: "Submitted",
@@ -31,14 +31,13 @@ export default function TrackAndAssistantSection() {
   const [result, setResult] = useState(null); // { report, timeline }
   const [hasSearched, setHasSearched] = useState(false);
 
-  const [myReportIds, setMyReportIds] = useState([]);
   const [myReports, setMyReports] = useState([]);
   const [myReportsLoading, setMyReportsLoading] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
-  const [addIdInput, setAddIdInput] = useState("");
-  const [addIdLoading, setAddIdLoading] = useState(false);
-  const [addIdError, setAddIdError] = useState("");
   const [copiedId, setCopiedId] = useState(null);
+  const [accountNotice, setAccountNotice] = useState("");
+
+  const accessToken = useMemo(() => getUserAccessToken(), []);
 
   const report = result?.report ?? null;
   const timeline = useMemo(
@@ -53,29 +52,39 @@ export default function TrackAndAssistantSection() {
   }, [report, timeline]);
 
   useEffect(() => {
-    setMyReportIds(getMyReportIds());
-  }, []);
-
-  useEffect(() => {
-    if (myReportIds.length === 0) {
-      setMyReports([]);
-      return;
-    }
     let cancelled = false;
     setMyReportsLoading(true);
-    Promise.all(
-      myReportIds.map((id) =>
-        fetch(`/api/reports/${encodeURIComponent(id)}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .catch(() => null)
-      )
-    ).then((results) => {
-      if (cancelled) return;
-      setMyReports(results.filter(Boolean).map((d) => ({ report_id: d.report?.report_id, ...d })));
-      setMyReportsLoading(false);
-    });
+
+    async function run() {
+      try {
+        if (!accessToken) {
+          setMyReports([]);
+          setAccountNotice("Sign in to see your saved reports on any device.");
+          return;
+        }
+
+        setAccountNotice("");
+        const res = await fetch("/api/my-reports", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setMyReports([]);
+          setAccountNotice(data?.error || "Unable to load your account reports.");
+          return;
+        }
+
+        // Normalize shape to match the list renderer below
+        const list = Array.isArray(data?.reports) ? data.reports : [];
+        setMyReports(list.map((r) => ({ report: r, timeline: [] })));
+      } finally {
+        if (!cancelled) setMyReportsLoading(false);
+      }
+    }
+
+    run();
     return () => { cancelled = true; };
-  }, [myReportIds]);
+  }, [accessToken]);
 
   const copyReportId = useCallback((id) => {
     if (!id) return;
@@ -90,32 +99,6 @@ export default function TrackAndAssistantSection() {
     const term = searchFilter.trim().toLowerCase();
     return myReports.filter((r) => r.report?.report_id?.toLowerCase().includes(term));
   }, [myReports, searchFilter]);
-
-  async function handleAddByReportId(e) {
-    e.preventDefault();
-    const trimmed = addIdInput.trim();
-    if (!trimmed) return;
-    setAddIdError("");
-    setAddIdLoading(true);
-    try {
-      const res = await fetch(`/api/reports/${encodeURIComponent(trimmed)}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setAddIdError(data?.error || "Report not found.");
-        return;
-      }
-      addMyReportId(trimmed);
-      setMyReportIds(getMyReportIds());
-      setAddIdInput("");
-      setResult(data);
-      setHasSearched(true);
-      setError("");
-    } catch {
-      setAddIdError("Unable to fetch report.");
-    } finally {
-      setAddIdLoading(false);
-    }
-  }
 
   function handleViewReport(data) {
     setResult(data);
@@ -147,10 +130,6 @@ export default function TrackAndAssistantSection() {
         throw new Error(data.error || "Unable to find report right now.");
       }
       setResult(data);
-      if (data?.report?.report_id) {
-        addMyReportId(data.report.report_id);
-        setMyReportIds(getMyReportIds());
-      }
     } catch (err) {
       setError(err.message);
       setResult(null);
@@ -187,8 +166,7 @@ export default function TrackAndAssistantSection() {
         <div className="mb-8">
           <h2 className="text-[28px] font-bold text-gray-900 sm:text-[34px]">Track your Reports</h2>
           <p className="mt-3 text-[16px] text-gray-700 sm:text-[18px]">
-            Paste your Report ID from the confirmation screen or email to see which office is handling it and its
-            current status.
+          View and track your submitted reports
           </p>
           <div className="mt-4 h-[4px] w-full bg-[#2F5BFF]" />
         </div>
@@ -205,7 +183,7 @@ export default function TrackAndAssistantSection() {
             <div className="relative z-10">
               <div className="text-[20px] font-bold sm:text-[22px]">Reports</div>
               <div className="mt-1 text-[14px] text-white/95 sm:text-[15px]">
-                View your submitted reports and track any Report ID.
+              Here are the reports linked to your email account. Please note that delivery times may vary depending on demand.
               </div>
             </div>
           </div>
@@ -214,7 +192,7 @@ export default function TrackAndAssistantSection() {
           <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-[14px] font-semibold text-gray-700">Your reports</div>
-              <div className="text-[12px] text-gray-500">Saved on this device</div>
+              <div className="text-[12px] text-gray-500">Saved in your account</div>
             </div>
 
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -225,38 +203,25 @@ export default function TrackAndAssistantSection() {
                 placeholder="Search by Report ID..."
                 className="flex-1 min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-200/40"
               />
-              <form onSubmit={handleAddByReportId} className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <input
-                  type="text"
-                  value={addIdInput}
-                  onChange={(e) => {
-                    setAddIdInput(e.target.value);
-                    setAddIdError("");
-                  }}
-                  placeholder="Add by Report ID"
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none focus:border-blue-300 sm:w-56"
-                />
-                <button
-                  type="submit"
-                  disabled={addIdLoading}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-600 bg-blue-600 px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-                >
-                  <FiPlus className="h-4 w-4" />
-                  {addIdLoading ? "Adding…" : "Add"}
-                </button>
-              </form>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchFilter("");
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[14px] font-semibold text-gray-700 hover:bg-gray-50 sm:w-auto"
+              >
+                Clear
+              </button>
             </div>
 
-            {addIdError && <p className="mt-2 text-[13px] text-red-600">{addIdError}</p>}
+            {accountNotice && <p className="mt-2 text-[13px] text-gray-600">{accountNotice}</p>}
 
             <div className="mt-4">
               {myReportsLoading ? (
                 <p className="py-6 text-center text-[14px] text-gray-500">Loading your reports…</p>
               ) : filteredMyReports.length === 0 ? (
                 <p className="py-6 text-center text-[14px] text-gray-500">
-                  {myReportIds.length === 0
-                    ? "No reports yet. Submit a report above or add one by Report ID."
-                    : "No reports match your search."}
+                  {searchFilter.trim() ? "No reports match your search." : "No reports yet."}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -316,7 +281,7 @@ export default function TrackAndAssistantSection() {
           >
             <div className="flex-1">
               <label className="block text-[13px] font-semibold text-gray-700 sm:text-[14px]">
-                Track by Report ID
+                Track a Report ID
               </label>
               <div className="mt-1 relative">
                 <input

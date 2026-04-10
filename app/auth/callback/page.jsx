@@ -31,10 +31,15 @@ export default function AuthCallbackPage() {
         return;
       }
 
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       const profile = {
         firstName: user.user_metadata?.firstName ?? "",
         lastName: user.user_metadata?.lastName ?? "",
         email: user.email ?? "",
+        accessToken: session?.access_token ?? null,
       };
 
       // For OAuth we default to sessionStorage (same pattern as password login).

@@ -356,6 +356,30 @@ export async function listReports(assignedTo) {
 }
 
 /**
+ * List reports submitted by a given user email (end-user "My reports").
+ * @param {string} email
+ * @returns {Promise<Array>}
+ */
+export async function listReportsByEmail(email) {
+  const emailStr = String(email || '').trim()
+  if (!emailStr) return []
+
+  const supabase = getSupabase()
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .eq('email', emailStr)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    const err = new Error(`[reports service] ${error.message}`)
+    err.__supabase = error
+    throw err
+  }
+  return data ?? []
+}
+
+/**
  * Get a single report by its public report_id (for tracking).
  */
 export async function getReportById(reportId) {
@@ -457,6 +481,7 @@ export default {
   submitReport,
   updateReportStatus,
   listReports,
+  listReportsByEmail,
   getReportById,
   getReportTimeline,
   insertReport,

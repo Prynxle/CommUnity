@@ -18,15 +18,15 @@ export default function CommUpdatesSection() {
     () => [
       {
         title: "Guidance Office Announcement",
-        text: "No Announcemenet.",
+        text: "Faculty and Student Services Evaluation – 2nd Semester A.Y. 2025–2026 .",
         tag: "Guidance",
-        meta: "Updated today • 9:10 AM",
+        meta: "April 7, 2026 • 1:02 PM",
       },
       {
         title: "Campus Safety Advisory",
         text: "Please wear you complete school uniform and bring your school ID at all times.",
         tag: "Safety",
-        meta: "Updated today • 8:30 AM",
+        meta: "April 6, 2026 • 8:30 AM",
       },
       {
         title: "Facilities Notice",
@@ -38,7 +38,7 @@ export default function CommUpdatesSection() {
           </>
         ),
         tag: "Facilities",
-        meta: "Scheduled today • 3:00 PM",
+        // meta: "Scheduled today • 3:00 PM",
       },
     ],
     []
@@ -147,7 +147,7 @@ export default function CommUpdatesSection() {
             School Dashboard
           </h2>
           <p className="mt-2 text-[17px] text-gray-700 sm:text-[20px]">
-            Stay updated with announcements, view quick stats, and see what the community is saying.
+            Stay updated with announcements and view quick stats.
           </p>
           <div className="mt-4 h-[4px] w-full bg-[#2F5BFF]" />
         </div>
