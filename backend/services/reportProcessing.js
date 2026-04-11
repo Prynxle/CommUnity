@@ -86,6 +86,19 @@ export function sanitize(userInput) {
     let s = value.trim()
     const limit = maxLen[key]
     if (limit && s.length > limit) s = s.slice(0, limit)
+    // Reduce stored/script injection risk in fields that may appear in HTML or rich UIs later
+    if (
+      [
+        'description',
+        'first_name',
+        'email',
+        'category',
+        'locationCategory',
+        'subLocation',
+      ].includes(key)
+    ) {
+      s = s.replace(/[<>]/g, '')
+    }
     out[key] = s
   }
   return out

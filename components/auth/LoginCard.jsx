@@ -93,7 +93,7 @@ export default function LoginCard({ containerless = false }) {
               firstName: payload?.user?.user_metadata?.firstName ?? '',
               lastName: payload?.user?.user_metadata?.lastName ?? '',
               email: payload?.user?.email ?? email,
-              accessToken: payload?.session?.access_token ?? null,
+              accessToken: payload?.access_token ?? payload?.session?.access_token ?? null,
             }
 
             saveUserProfile(profile, remember)

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminSession } from "../../lib/adminStorage";
+import { isTrustedReportPhotoUrl } from "../../lib/reportPhotoUrl";
 import { poppins, georama, inter } from "../../lib/fonts";
 import { FiCopy, FiArrowRight, FiPhone, FiX, FiImage, FiBarChart2, FiShield, FiClock, FiCheckCircle } from "react-icons/fi";
 
@@ -502,7 +503,15 @@ export default function AdminDashboardPage() {
                                 {report.photo_url && (
                                   <button
                                     type="button"
-                                    onClick={() => setPhotoModal({ open: true, photoUrl: report.photo_url })}
+                                    onClick={() => {
+                                      if (!isTrustedReportPhotoUrl(report.photo_url)) {
+                                        setError(
+                                          "This evidence link is not from approved storage and cannot be previewed."
+                                        );
+                                        return;
+                                      }
+                                      setPhotoModal({ open: true, photoUrl: report.photo_url });
+                                    }}
                                     className="mt-2 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-[12px] font-semibold text-blue-700 transition hover:bg-blue-100"
                                   >
                                     <FiImage className="h-4 w-4" />

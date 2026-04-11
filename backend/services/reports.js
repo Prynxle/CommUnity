@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import sgMail from '@sendgrid/mail'
+import { escapeHtml } from '../../lib/escapeHtml'
 import {
   processReportSubmission,
   isValidTransition,
@@ -114,17 +115,32 @@ export async function submitReport(userInput) {
  * @param {string} newStatus - One of SUBMITTED, IN_PROGRESS, RESOLVED, CLOSED
  * @param {string} [adminId] - Admin who made the change (for timeline)
  */
-export async function updateReportStatus(reportId, newStatus, adminId = null, note = null) {
+export async function updateReportStatus(
+  reportId,
+  newStatus,
+  adminId = null,
+  note = null,
+  options = {}
+) {
+  const { assignedRole = null } = options
   const supabase = getSupabase()
   const { data: report, error: fetchErr } = await supabase
     .from('reports')
-    .select('id, report_id, status')
+    .select('id, report_id, status, assigned_to')
     .eq('report_id', reportId)
     .single()
 
   if (fetchErr || !report) {
     const err = new Error(`[reports service] Report not found: ${reportId}`)
     if (fetchErr) err.__supabase = fetchErr
+    throw err
+  }
+
+  if (assignedRole && report.assigned_to !== assignedRole) {
+    const err = new Error(
+      '[reports service] You are not authorized to update this report.'
+    )
+    err.code = 'FORBIDDEN_ASSIGNMENT'
     throw err
   }
 
@@ -208,6 +224,8 @@ function getStatusEmailContent(status) {
  * Build the HTML email template for status updates.
  */
 function buildStatusEmailHtml({ title, description, badgeColor, badgeLabel, reportId, trackUrl }) {
+  const safeReportId = escapeHtml(String(reportId ?? ''))
+  const safeTrackUrl = trackUrl ? escapeHtml(String(trackUrl)) : ''
   const trackSection = trackUrl
     ? `
             <tr>
@@ -215,13 +233,13 @@ function buildStatusEmailHtml({ title, description, badgeColor, badgeLabel, repo
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
                     <td style="background-color:#111827; border-radius:10px;">
-                      <a href="${trackUrl}" style="display:inline-block; padding:10px 14px; font-size:13px; font-weight:700; color:#ffffff; text-decoration:none;">
+                      <a href="${safeTrackUrl}" style="display:inline-block; padding:10px 14px; font-size:13px; font-weight:700; color:#ffffff; text-decoration:none;">
                         Track your report
                       </a>
                     </td>
                     <td style="padding-left:10px; font-size:12px; color:#6b7280;">
                       If the button doesn\u2019t work, copy this link:<br/>
-                      <span style="word-break:break-all; color:#374151;">${trackUrl}</span>
+                      <span style="word-break:break-all; color:#374151;">${safeTrackUrl}</span>
                     </td>
                   </tr>
                 </table>
@@ -265,7 +283,7 @@ function buildStatusEmailHtml({ title, description, badgeColor, badgeLabel, repo
                   <tr>
                     <td style="padding:8px 0; width:120px; font-weight:600; color:#6b7280;">Report ID</td>
                     <td style="padding:8px 0; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
-                      ${reportId}
+                      ${safeReportId}
                     </td>
                   </tr>
                   <tr>
@@ -449,19 +467,70 @@ export async function insertReport(data) {
   return row
 }
 
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024
+const ALLOWED_PHOTO_EXT = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp'])
+
+function sniffImageType(buffer) {
+  const u8 = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : buffer
+  if (!u8 || u8.length < 12) return null
+  if (u8[0] === 0xff && u8[1] === 0xd8 && u8[2] === 0xff) return 'jpg'
+  if (u8[0] === 0x89 && u8[1] === 0x50 && u8[2] === 0x4e && u8[3] === 0x47) return 'png'
+  if (u8[0] === 0x47 && u8[1] === 0x49 && u8[2] === 0x46) return 'gif'
+  if (u8[8] === 0x57 && u8[9] === 0x45 && u8[10] === 0x42 && u8[11] === 0x50) return 'webp'
+  return null
+}
+
+function extMatchesSniff(sniffed, rawExt) {
+  if (!sniffed || !rawExt) return false
+  if (sniffed === 'jpg') return rawExt === 'jpg' || rawExt === 'jpeg'
+  return sniffed === rawExt
+}
+
 /**
  * Upload a report photo to Supabase Storage.
+ * @param {ArrayBuffer | Buffer} fileBuffer
+ * @param {string} filename - original filename (extension validated)
  */
-export async function uploadReportPhoto(file, filename) {
-  const supabase = getSupabase()
-  const ext = (filename || '').split('.').pop() || 'jpg'
+export async function uploadReportPhoto(fileBuffer, filename) {
+  if (!(fileBuffer instanceof ArrayBuffer)) {
+    const err = new Error('[reports service] upload: invalid file data')
+    throw err
+  }
+  const buf = fileBuffer
+  const byteLength = buf.byteLength
+  if (byteLength === 0) {
+    const err = new Error('[reports service] upload: empty file')
+    throw err
+  }
+  if (byteLength > MAX_PHOTO_BYTES) {
+    const err = new Error('[reports service] upload: file too large (max 5MB)')
+    throw err
+  }
+
+  const rawExt = (filename || '').split('.').pop()?.toLowerCase() || ''
+  if (!ALLOWED_PHOTO_EXT.has(rawExt)) {
+    const err = new Error('[reports service] upload: only JPG, PNG, GIF, or WEBP allowed')
+    throw err
+  }
+
+  const sniffed = sniffImageType(buf)
+  if (!sniffed || !extMatchesSniff(sniffed, rawExt)) {
+    const err = new Error('[reports service] upload: file content does not match a supported image type')
+    throw err
+  }
+
+  const ext = sniffed === 'jpg' ? 'jpg' : sniffed
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+  const supabase = getSupabase()
+  const body = Buffer.from(buf)
 
   const { data, error } = await supabase.storage
     .from('report-photos')
-    .upload(path, file, {
+    .upload(path, body, {
       cacheControl: '3600',
       upsert: false,
+      contentType: `image/${ext === 'jpg' ? 'jpeg' : ext}`,
     })
 
   if (error) {

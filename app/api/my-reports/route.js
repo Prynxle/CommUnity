@@ -38,10 +38,7 @@ export async function GET(request) {
     return NextResponse.json({ reports: safeReports })
   } catch (error) {
     console.error('[my-reports API] GET', error)
-    return NextResponse.json(
-      { error: error?.message ?? 'Failed to load your reports.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to load your reports.' }, { status: 500 })
   }
 }
 

@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
         {
           email: data.user?.email ?? username,
           role: data.role,
-          access_token: data.session?.access_token ?? "",
+          access_token: data.access_token ?? data.session?.access_token ?? "",
         },
         remember
       );

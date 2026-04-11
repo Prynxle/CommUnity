@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server'
 import authService from '../../../../backend/services/auth'
+import { checkRateLimit, getClientIp } from '../../../../lib/rateLimit'
 
 export async function POST(request) {
   try {
+    const ip = getClientIp(request)
+    if (!checkRateLimit(`register:${ip}`, { limit: 12, windowMs: 60 * 60 * 1000 })) {
+      return NextResponse.json(
+        { error: 'Too many registration attempts. Please try again later.' },
+        { status: 429 }
+      )
+    }
+
     const { email, password, metadata } = await request.json()
 
     if (!email || !password) {
@@ -20,8 +29,10 @@ export async function POST(request) {
 
     return NextResponse.json({ user: data.user }, { status: 201 })
   } catch (error) {
-    const message =
-      error?.message ?? 'Unable to register right now. Please try again.'
-    return NextResponse.json({ error: message }, { status: 400 })
+    console.error('[auth register]', error)
+    return NextResponse.json(
+      { error: 'Unable to register right now. Please try again.' },
+      { status: 400 }
+    )
   }
 }

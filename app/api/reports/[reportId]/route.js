@@ -20,7 +20,12 @@ export async function GET(_request, { params }) {
 
     let timeline = []
     try {
-      timeline = await getReportTimeline(reportId)
+      const rawTimeline = await getReportTimeline(reportId)
+      timeline = (rawTimeline ?? []).map((entry) => ({
+        previous_status: entry.previous_status ?? null,
+        new_status: entry.new_status ?? null,
+        changed_at: entry.changed_at ?? entry.created_at ?? null,
+      }))
     } catch {
       timeline = []
     }
@@ -40,10 +45,7 @@ export async function GET(_request, { params }) {
     return NextResponse.json({ report: safeReport, timeline })
   } catch (error) {
     console.error('[reports API] track', error)
-    return NextResponse.json(
-      { error: error?.message ?? 'Failed to track report.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to track report.' }, { status: 500 })
   }
 }
 

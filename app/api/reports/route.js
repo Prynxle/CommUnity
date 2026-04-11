@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 import { submitReport, uploadReportPhoto, listReports } from '../../../backend/services/reports'
 import { getAdminFromToken } from '../../../backend/services/adminAuth'
+import { escapeHtml } from '../../../lib/escapeHtml'
+import { checkRateLimit, getClientIp } from '../../../lib/rateLimit'
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -24,10 +26,7 @@ export async function GET(request) {
     return NextResponse.json({ reports })
   } catch (error) {
     console.error('[reports API] GET', error)
-    return NextResponse.json(
-      { error: error?.message ?? 'Failed to load reports.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to load reports.' }, { status: 500 })
   }
 }
 
@@ -40,48 +39,63 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    const contentType = request.headers.get('content-type') || ''
-    let body
-    let photoUrl = null
-
-    if (contentType.includes('multipart/form-data')) {
-      const formData = await request.formData()
-      body = {
-        category: formData.get('category')?.toString()?.trim() || '',
-        locationCategory: formData.get('locationCategory')?.toString()?.trim() || '',
-        subLocation: formData.get('subLocation')?.toString()?.trim() || null,
-        description: formData.get('description')?.toString()?.trim() || '',
-        first_name: formData.get('first_name')?.toString()?.trim() || '',
-        email: formData.get('email')?.toString()?.trim() || '',
-      }
-      const file = formData.get('photo')
-      const hasFile =
-        file &&
-        typeof file === 'object' &&
-        typeof file.arrayBuffer === 'function' &&
-        file.size > 0
-
-      if (!hasFile) {
-        return NextResponse.json(
-          { error: 'Please attach evidence (a photo or screenshot).' },
-          { status: 400 }
-        )
-      }
-
-      try {
-        photoUrl = await uploadReportPhoto(await file.arrayBuffer(), file.name)
-      } catch (uploadErr) {
-        console.warn('[reports API] Photo upload failed:', uploadErr?.message)
-        return NextResponse.json(
-          { error: 'Evidence upload failed. Please try a different file or try again later.' },
-          { status: 500 }
-        )
-      }
-    } else {
-      body = await request.json()
+    const ip = getClientIp(request)
+    if (!checkRateLimit(`report-submit:${ip}`, { limit: 40, windowMs: 60 * 60 * 1000 })) {
+      return NextResponse.json(
+        { error: 'Too many submissions from this network. Please try again later.' },
+        { status: 429 }
+      )
     }
 
-    // Sub-location required when location has sub-options (frontend sends subLocationRequired or we infer)
+    const contentType = request.headers.get('content-type') || ''
+    if (!contentType.includes('multipart/form-data')) {
+      return NextResponse.json(
+        {
+          error:
+            'Reports must be submitted with multipart/form-data including a photo attachment.',
+        },
+        { status: 400 }
+      )
+    }
+
+    const formData = await request.formData()
+    const body = {
+      category: formData.get('category')?.toString()?.trim() || '',
+      locationCategory: formData.get('locationCategory')?.toString()?.trim() || '',
+      subLocation: formData.get('subLocation')?.toString()?.trim() || null,
+      description: formData.get('description')?.toString()?.trim() || '',
+      first_name: formData.get('first_name')?.toString()?.trim() || '',
+      email: formData.get('email')?.toString()?.trim() || '',
+    }
+
+    const file = formData.get('photo')
+    const hasFile =
+      file &&
+      typeof file === 'object' &&
+      typeof file.arrayBuffer === 'function' &&
+      file.size > 0
+
+    if (!hasFile) {
+      return NextResponse.json(
+        { error: 'Please attach evidence (a photo or screenshot).' },
+        { status: 400 }
+      )
+    }
+
+    let photoUrl
+    try {
+      photoUrl = await uploadReportPhoto(await file.arrayBuffer(), file.name)
+    } catch (uploadErr) {
+      console.warn('[reports API] Photo upload failed:', uploadErr?.message)
+      const raw = uploadErr?.message || ''
+      const friendly = raw.includes('too large')
+        ? 'Photo must be 5MB or smaller.'
+        : raw.includes('supported image') || raw.includes('JPG, PNG')
+          ? 'Please upload a valid JPG, PNG, GIF, or WEBP image.'
+          : 'Evidence upload failed. Please try a different file.'
+      return NextResponse.json({ error: friendly }, { status: 400 })
+    }
+
     const locationHasSub = [
       '1st floor',
       '2nd floor',
@@ -89,8 +103,7 @@ export async function POST(request) {
       '4th floor',
     ].includes((body.locationCategory || '').trim())
     body.subLocationRequired = locationHasSub
-
-    body.photo_url = photoUrl ?? body.photo_url ?? null
+    body.photo_url = photoUrl
 
     const result = await submitReport(body)
 
@@ -100,6 +113,14 @@ export async function POST(request) {
     const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || vercelUrl
     const trackUrl = baseUrl && reportId ? `${baseUrl}` : null
+
+    const safeEmail = escapeHtml(userEmail)
+    const safeCategory = escapeHtml(body.category || '-')
+    const safeLocation = escapeHtml(body.locationCategory || '-')
+    const safeSubLoc = body.subLocation ? escapeHtml(body.subLocation) : ''
+    const safeDescription = escapeHtml(body.description || '-')
+    const safeTrack = trackUrl ? escapeHtml(trackUrl) : ''
+    const safeReportId = escapeHtml(String(reportId ?? 'unknown'))
 
     if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM && userEmail) {
       try {
@@ -157,13 +178,13 @@ ${body.description || '-'}
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
                     <td style="background-color:#111827; border-radius:10px;">
-                      <a href="${trackUrl}" style="display:inline-block; padding:10px 14px; font-size:13px; font-weight:700; color:#ffffff; text-decoration:none;">
+                      <a href="${safeTrack}" style="display:inline-block; padding:10px 14px; font-size:13px; font-weight:700; color:#ffffff; text-decoration:none;">
                         Track your report
                       </a>
                     </td>
                     <td style="padding-left:10px; font-size:12px; color:#6b7280;">
                       If the button doesn’t work, copy this link:<br/>
-                      <span style="word-break:break-all; color:#374151;">${trackUrl}</span>
+                      <span style="word-break:break-all; color:#374151;">${safeTrack}</span>
                     </td>
                   </tr>
                 </table>
@@ -179,25 +200,25 @@ ${body.description || '-'}
                   <tr>
                     <td style="padding:8px 0; width:120px; font-weight:600; color:#6b7280;">Report ID</td>
                     <td style="padding:8px 0; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
-                      ${reportId ?? 'unknown'}
+                      ${safeReportId}
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0; font-weight:600; color:#6b7280;">Your email</td>
                     <td style="padding:8px 0;">
-                      ${userEmail}
+                      ${safeEmail}
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0; font-weight:600; color:#6b7280;">Category</td>
                     <td style="padding:8px 0;">
-                      ${body.category || '-'}
+                      ${safeCategory}
                     </td>
                   </tr>
                   <tr>
                     <td style="padding:8px 0; font-weight:600; color:#6b7280;">Location</td>
                     <td style="padding:8px 0;">
-                      ${body.locationCategory || '-'}${body.subLocation ? ' — ' + body.subLocation : ''}
+                      ${safeLocation}${safeSubLoc ? ` — ${safeSubLoc}` : ''}
                     </td>
                   </tr>
                 </table>
@@ -211,10 +232,7 @@ ${body.description || '-'}
                     Description
                   </div>
                   <div style="font-size:13px; color:#374151; line-height:1.55; white-space:pre-wrap;">
-                    ${(body.description || '-')
-              .replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')}
+                    ${safeDescription}
                   </div>
                 </div>
               </td>
@@ -264,8 +282,9 @@ ${body.description || '-'}
       )
     }
     console.error('[reports API]', error)
-    const message =
-      error?.message ?? 'Failed to submit report. Please try again.'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to submit report. Please try again.' },
+      { status: 500 }
+    )
   }
 }
