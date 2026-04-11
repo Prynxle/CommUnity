@@ -7,10 +7,18 @@ import { createClient } from "@supabase/supabase-js";
 import Beams from "../../components/backgrounds/Beams";
 
 const supabase =
-  typeof window !== "undefined"
+  typeof window !== "undefined" &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     ? createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          auth: {
+            // Recovery links put tokens in the URL hash; this must be true to establish a session.
+            detectSessionInUrl: true,
+          },
+        }
       )
     : null;
 

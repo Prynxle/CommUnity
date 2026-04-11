@@ -51,7 +51,7 @@ export async function POST(request) {
   } catch (error) {
     console.error('[auth verify error]', error)
     return NextResponse.json(
-      { error: error?.message ?? 'Verification failed. Please try again.' },
+      { error: 'Verification failed. Please try again.' },
       { status: 500 }
     )
   }

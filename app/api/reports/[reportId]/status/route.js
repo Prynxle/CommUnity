@@ -38,9 +38,17 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    const result = await updateReportStatus(reportId, newStatus, adminId, note)
+    const result = await updateReportStatus(reportId, newStatus, adminId, note, {
+      assignedRole: admin.role,
+    })
     return NextResponse.json(result)
   } catch (error) {
+    if (error?.code === 'FORBIDDEN_ASSIGNMENT') {
+      return NextResponse.json(
+        { error: 'You can only update reports assigned to your office.' },
+        { status: 403 }
+      )
+    }
     if (error?.code === 'INVALID_TRANSITION') {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
@@ -48,9 +56,6 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Report not found' }, { status: 404 })
     }
     console.error('[reports API] status update', error)
-    return NextResponse.json(
-      { error: error?.message ?? 'Failed to update status' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update status.' }, { status: 500 })
   }
 }

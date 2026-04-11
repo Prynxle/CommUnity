@@ -16,7 +16,10 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    const message = error?.message ?? 'Unable to reset password. Please try again.'
-    return NextResponse.json({ error: message }, { status: 400 })
+    console.error('[reset-password confirm]', error)
+    return NextResponse.json(
+      { error: 'Unable to reset password. Please try again.' },
+      { status: 400 }
+    )
   }
 }

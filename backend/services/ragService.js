@@ -275,7 +275,7 @@ export async function generateAssistantResponse(userQuery) {
           `If you need to add details, submit a new report referencing this ID in the description (don’t post private info in chat).`
 
         return { text: filterResponse(text), sources: [] }
-      } catch (e) {
+      } catch {
         // If DB/env isn’t configured, don’t crash the chat experience.
         return {
           text:

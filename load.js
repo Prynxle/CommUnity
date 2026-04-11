@@ -33,7 +33,7 @@ export function setup() {
 
     if (loginRes.status === 200) {
       const data = JSON.parse(loginRes.body)
-      const token = data?.session?.access_token
+      const token = data?.access_token ?? data?.session?.access_token
       if (token) {
         tokens.push(token)
         console.log(`✓ ${account.email} logged in`)
@@ -58,26 +58,17 @@ export default function (data) {
     return
   }
 
-  // Each VU picks a random token (simulates different users)
-  const token = tokens[Math.floor(Math.random() * tokens.length)]
-
-  // Submit report with random user's token
+  const png = open('./scripts/1x1.png', 'b')
   const reportRes = http.post(
     `${BASE}/api/reports`,
-    JSON.stringify({
+    {
       category: 'Peer Conflict',
       locationCategory: '1st floor',
       subLocation: 'LRC',
       description: 'Sample report from load test',
       first_name: 'Load',
       email: 'loadtest@example.com',
-      photo_url: 'https://example.com/load-test-evidence.jpg',
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
+      photo: http.file(png, 'evidence.png', 'image/png'),
     }
   )
 
